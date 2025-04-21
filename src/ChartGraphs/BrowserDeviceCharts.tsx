@@ -19,14 +19,16 @@ const AnalyticsDashboard = () => {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-4 bg-gray-50 min-h-screen">
-      <div className="w-full md:w-1/2">
+    
+    <div className="flex  w-full  gap-4 p-4  min-h-screen">
+      <div className="w-full ">
         <DevicePieChart stats={deviceStats} />
       </div>
-      <div className="w-full md:w-1/2">
+      <div className="w-full ">
         <BrowserStatsChart stats={browserStats} />
       </div>
     </div>
+   
   );
 };
 

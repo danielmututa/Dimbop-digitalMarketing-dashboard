@@ -18,7 +18,7 @@ import {
   
   const DevicePieChart = ({ stats }: { stats: DeviceStats }) => {
     const data = {
-      labels: ['Mobile', 'Tablet', 'Desktop', 'Other', 'Unknown'],
+      
       datasets: [
         {
           data: [
@@ -31,10 +31,11 @@ import {
           backgroundColor: ['#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF6384'],
         },
       ],
+      labels: ['Mobile', 'Tablet', 'Desktop', 'Other', 'Unknown'],
     };
   
     return (
-      <div className="bg-white p-4 rounded-xl shadow-sm w-full">
+      <div className="p-4 rounded-xl shadow-sm  w-[99%]">
         <h2 className="text-lg font-semibold mb-4">Device Distribution</h2>
         <Pie data={data} />
       </div>
