@@ -19,9 +19,11 @@ const items = [
   { title: "Home", path: "/", icon: Home },
   { title: "Products", path: "/products", icon: Inbox },
   { title: "Feedback", path: "/feedback", icon: Calendar },
+  { title: "Blogs", path: "/blogs", icon: Settings },
   { title: "Orders", path: "/orders", icon: Search },
   { title: "Users", path: "/users", icon: Settings },
   { title: "Categories", path: "/categories", icon: Settings },
+  
 ];
 
 type MainSidebarProps = {
