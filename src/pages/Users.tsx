@@ -1,6 +1,6 @@
 import React from 'react';
 import useFetch from '@/hooks/useFetch';
-import { useUserStore } from '@/context/userContext';
+import { useAuthStore } from '@/context/userContext';
 import { User } from '@/components/interfaces/auth';
 import { toast } from 'react-toastify';
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,7 @@ interface UserTableProps {
 }
 
 const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
-  const { token } = useUserStore();
+  const { token } = useAuthStore();
   // Update the type to match what your API actually returns
   const { data: apiResponse, loading, error, refetch } = useFetch<{ success: boolean; data: User[] }>('/api/auth/users');
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);

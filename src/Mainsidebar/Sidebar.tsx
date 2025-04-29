@@ -23,6 +23,8 @@ const items = [
   { title: "Orders", path: "/orders", icon: Search },
   { title: "Users", path: "/users", icon: Settings },
   { title: "Categories", path: "/categories", icon: Settings },
+  { title: "Login", path: "/login", icon: Settings },
+  { title: "Register", path: "/register", icon: Settings },
   
 ];
 
