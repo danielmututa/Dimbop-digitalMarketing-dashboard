@@ -24,39 +24,19 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      console.log('Attempting login with:', { email, password }); // Debug log
+      console.log('Attempting login with:', { email, password });
       
-      const response = await loginApi({ email, password });
-      console.log('API Response:', response); // Debug log
+      // Use the auth store login function directly
+      await login(email, password);
       
-      if (!response.data || !response.success) {
-        throw new Error('Invalid response from server');
-      }
-
-      console.log('Calling store login with:', { 
-        user: response.data, 
-        token: response.success 
-      }); // Debug log
-      
-      await login(response.data, response.success);
-      console.log('Store login completed'); // Debug log
-      
-      toast.success('Login successful!');
+      // The toast is already shown in the login function
       navigate('/dashboard');
-      
     } catch (error) {
-      console.error('Login error:', error); // Detailed error log
-      
-      let errorMessage = 'Login failed';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-      
-      toast.error(errorMessage);
+      // Error is already handled in the login function
+      console.error('Login component caught error:', error);
+      // No need for additional toast here as it's shown in the auth store
     } finally {
       setLoading(false);
     }

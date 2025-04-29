@@ -81,7 +81,36 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     }
   },
 
-  login: async (email, password) => {
+  // login: async (email, password) => {
+  //   set({ isLoading: true, error: null });
+  //   try {
+  //     const response = await fetch('/api/auth/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ email, password }),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData: ApiError = await response.json();
+  //       throw new Error(errorData.message || 'Login failed');
+  //     }
+
+  //     const { user, token } = await response.json();
+  //     set({ user, token, isLoading: false });
+  //     setCookie('user', JSON.stringify(user), 15);
+  //     setCookie('token', token, 15);
+  //     toast.success('Login successful');
+  //   } catch (error: unknown) {
+  //     const errorMessage = isApiError(error) 
+  //       ? error.message 
+  //       : error instanceof Error 
+  //         ? error.message 
+  //         : 'An unknown error occurred';
+  //     set({ error: errorMessage, isLoading: false });
+  //     toast.error(errorMessage);
+  //   }
+  // },
+login: async (email, password) => {
     set({ isLoading: true, error: null });
     try {
       const response = await fetch('/api/auth/login', {
@@ -100,7 +129,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       setCookie('user', JSON.stringify(user), 15);
       setCookie('token', token, 15);
       toast.success('Login successful');
-    } catch (error: unknown) {
+    }
+    catch (error: unknown) {
       const errorMessage = isApiError(error) 
         ? error.message 
         : error instanceof Error 
@@ -109,7 +139,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       set({ error: errorMessage, isLoading: false });
       toast.error(errorMessage);
     }
-  },
+  }
+,
 
   register: async (userData) => {
     set({ isLoading: true, error: null });
