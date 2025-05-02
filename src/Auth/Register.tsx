@@ -38,7 +38,9 @@ const Register = () => {
       await authRegister({
         username: data.username,
         email: data.email,
-        password: data.password
+        password: data.password,
+       
+
       });
       
       toast.success("Registration successful!");
