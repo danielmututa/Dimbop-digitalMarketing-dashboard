@@ -50,25 +50,6 @@ const Register = () => {
       toast.error(error instanceof Error ? error.message : "Registration failed");
     }
   };
-  //   console.log("Form submitted with data:", data);
-  //   try {
-  //     // Extract the data we need for registration
-  //     const { confirmPassword, ...requestData } = data;
-      
-  //     // Use the authRegister function directly with the correct parameters
-  //     await authRegister({
-  //       username: data.username,
-  //       email: data.email,
-  //       password: data.password
-  //     });
-      
-  //     toast.success("Registration successful!");
-  //     navigate("/dashboard");
-  //   } catch (error) {
-  //     console.error("Submission error:", error);
-  //     toast.error(error instanceof Error ? error.message : "Registration failed");
-  //   }
-  // };
 
   return (
     <div className="w-full flex justify-center items-center h-screen">
