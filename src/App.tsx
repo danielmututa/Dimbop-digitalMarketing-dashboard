@@ -69,7 +69,7 @@
 
 
 
-import { Navigate } from 'react-router-dom';
+// import { Navigate } from 'react-router-dom';
 import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ProtectedRoute } from './Auth/Protectedroutes/ProtectedRoutes'
@@ -116,7 +116,7 @@ function App() {
         </Route>
 
         {/* Catch all - redirect to login */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
       </Routes>
     </Suspense>
   )

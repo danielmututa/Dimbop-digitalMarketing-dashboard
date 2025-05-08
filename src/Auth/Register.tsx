@@ -1,18 +1,15 @@
-
-
-
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { RegisterSchema } from "@/lib/schemas/auth/register";
+// import RegisterSchema from "../lib/schemas/auth/register";
+import { RegisterInput } from "@/lib/schemas/auth/register";
 import { useAuthStore } from "@/context/userContext";
 import { toast } from "react-toastify";
-import { RegisterApi } from "@/api/authApi";
 
-const Register = () => {
+
+const Register =  () => {
   const navigate = useNavigate();
   const { register: authRegister } = useAuthStore(); // Rename to authRegister
 
@@ -21,33 +18,35 @@ const Register = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<RegisterSchema>();
+  } = useForm<RegisterInput>();
 
   const handleLoginRedirect = () => {
     console.log("Redirecting to login...");
     navigate("/login");
   };
 
-  const onSubmit = async (data: RegisterSchema) => {
+  const onSubmit = async (data: RegisterInput) => {
     console.log("Form submitted with data:", data);
     try {
-      // Just remove the unused variable
-      const { confirmPassword, ..._ } = data;
-      
-      // Use the authRegister function directly with the correct parameters
       await authRegister({
         username: data.username,
         email: data.email,
         password: data.password,
-       
-
+        confirmpassword: data.confirmPassword, // ✅ correct key
+        role: "admin", // ✅ fixed role
       });
-      
+
       toast.success("Registration successful!");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Submission error:", error);
-      toast.error(error instanceof Error ? error.message : "Registration failed");
+
+      // Backend validation errors
+      if (error?.response.data.message) {
+        toast.error(error.response.data.message); // Example: "Username already taken"
+      } else {
+        toast.error(error instanceof Error ? error.message : "Registration failed");
+      }
     }
   };
 

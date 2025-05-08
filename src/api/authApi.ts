@@ -1,5 +1,5 @@
 import { AuthResponse, LoginSchema } from './../lib/schemas/auth/login';
-import {RegisterSchema , AuthRegisterResponse} from "./../lib/schemas/auth/register";
+import {RegisterInput, AuthRegisterResponse  } from "./../lib/schemas/auth/register";
 import { unexpectedErrorMessage } from "@/lib/utils";
 import axios from "axios";
 import { apiClient } from "@/context/axios";
@@ -24,53 +24,26 @@ export const loginApi = async (data: LoginSchema) : Promise<AuthResponse>=> {
 }
 
 
-// export const RegisterApi = async (data: RegisterSchema) : Promise<AuthRegisterResponse>=> {
-//   try {
-//     const response = await apiClient.post("/api/auth/register", data);
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       throw new Error(error.response?.data.result);
-//     } else {
-//       throw new Error(`${unexpectedErrorMessage}`)
-//     }
-//   }
-// }
 
 
-// export const RegisterApi = async (data: RegisterSchema): Promise<AuthRegisterResponse> => {
-//   try {
-//     console.log("Sending registration data:", data); // Log the data being sent
-//     const response = await apiClient.post("/api/auth/register", data);
-//     console.log("Registration response:", response.data); // Log the server's response
-//     return response.data;
-//   } catch (error) {
-//     console.error("Registration error:", error); // Log the error if it occurs
-//     if (axios.isAxiosError(error)) {
-//       const errorMessage = error.response?.data.message || "Registration failed";
-//       console.error("Error message:", errorMessage); // Log the error message
-//       throw new Error(errorMessage);
-//     }
-//     throw new Error("An unexpected error occurred");
-//   }
-// };
 
 
-export const RegisterApi = async (data: RegisterSchema): Promise<AuthRegisterResponse> => {
+export const RegisterApi = async (data: RegisterInput): Promise<AuthRegisterResponse> => {
   try {
-    console.log('Sending registration data:', data);
-    console.log('Full request URL:', `${apiClient.defaults.baseURL}/api/auth/register`);
     const response = await apiClient.post('/api/auth/register', data);
-    console.log('Registration response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Registration error:', error);
     if (axios.isAxiosError(error)) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
-      console.error('Error message:', errorMessage);
-      console.error('Status code:', error.response?.status);
+      const backendError = error.response?.data;
+
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Registration failed';
+
       throw new Error(errorMessage);
     }
+
     throw new Error('An unexpected error occurred');
   }
 };

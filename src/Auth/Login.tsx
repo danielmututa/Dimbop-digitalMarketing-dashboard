@@ -32,7 +32,7 @@ const Login = () => {
       await login(email, password);
       
       // The toast is already shown in the login function
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       // Error is already handled in the login function
       console.error('Login component caught error:', error);

@@ -194,6 +194,8 @@
 import { create } from 'zustand';
 import { User } from '../components/interfaces/auth';
 import { toast } from 'react-toastify';
+import { RegisterAdmin } from '@/components/interfaces/auth';
+ // Adjust the import path as necessary
 
 // Cookie helper functions
 const setCookie = (name: string, value: string, days: number) => {
@@ -240,6 +242,9 @@ interface AuthActions {
     username: string;
     email: string;
     password: string;
+    confirmpassword: string;
+    role: string;
+   
   }) => Promise<void>;
   logout: () => void;
   clearError: () => void;
@@ -295,62 +300,79 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     }
   },
 
+
+  
+  
+
+
   // register: async (userData) => {
   //   set({ isLoading: true, error: null });
+  
+  //   const apiData: RegisterAdmin = {
+  //     username: userData.username,
+  //     email: userData.email,
+  //     password: userData.password,
+  //     confirmPassword: userData.password,
+  //     role: "admin" // Force role to be admin
+  //   };
+  
   //   try {
-       
-      
-
   //     const response = await fetch('/api/auth/register', {
   //       method: 'POST',
   //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify(userData),
+  //       body: JSON.stringify(apiData),
   //     });
-
+  
   //     if (!response.ok) {
   //       const errorData: ApiError = await response.json();
   //       throw new Error(errorData.message || 'Registration failed');
   //     }
-
+  
   //     const { user, token } = await response.json();
   //     set({ user, token, isLoading: false });
-  //     setCookie('admin', JSON.stringify(user), 15); // renamed
+  //     setCookie('user', JSON.stringify(user), 15);
   //     setCookie('token', token, 15);
   //     toast.success('Registration successful');
   //   } catch (error: unknown) {
   //     const errorMessage = isApiError(error)
   //       ? error.message
   //       : error instanceof Error
-  //       ? error.message
-  //       : 'An unknown error occurred';
+  //         ? error.message
+  //         : 'An unknown error occurred';
   //     set({ error: errorMessage, isLoading: false });
   //     toast.error(errorMessage);
   //   }
   // },
-
+  
   register: async (userData) => {
     set({ isLoading: true, error: null });
-    try {
-      // Add admin role automatically to the user data
-      const userDataWithRole = {
-        ...userData,
-        role: "admin"  // Add this line to set the role as admin
-      };
   
+    const apiData: RegisterAdmin = {
+      username: userData.username,
+      email: userData.email,
+      password: userData.password,
+      confirmPassword: userData.password,  // Force confirmation password to match
+      role: "admin", // Force role to be admin
+    };
+  
+    try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userDataWithRole),
+        body: JSON.stringify(apiData),
       });
   
+      // Check if response is successful
       if (!response.ok) {
         const errorData: ApiError = await response.json();
+        console.error("Registration error response:", errorData); // Log the full error response
         throw new Error(errorData.message || 'Registration failed');
       }
   
+      // Parse successful response
       const { user, token } = await response.json();
       set({ user, token, isLoading: false });
-      setCookie('admin', JSON.stringify(user), 15);
+      setCookie('user', JSON.stringify(user), 15);
       setCookie('token', token, 15);
       toast.success('Registration successful');
     } catch (error: unknown) {
@@ -361,8 +383,13 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         : 'An unknown error occurred';
       set({ error: errorMessage, isLoading: false });
       toast.error(errorMessage);
+  
+      console.error('Registration error:', error); // Log detailed error for debugging
     }
   },
+  
+
+
   logout: () => {
     set({ user: null, token: null });
     deleteCookie('admin'); // renamed
