@@ -3,15 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-// import RegisterSchema from "../lib/schemas/auth/register";
 import { RegisterInput } from "@/lib/schemas/auth/register";
 import { useAuthStore } from "@/context/userContext";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
-
-const Register =  () => {
+const Register = () => {
   const navigate = useNavigate();
-  const { register: authRegister } = useAuthStore(); // Rename to authRegister
+  const { register: authRegister, user } = useAuthStore();
 
   const {
     register,
@@ -20,33 +19,35 @@ const Register =  () => {
     watch,
   } = useForm<RegisterInput>();
 
+  // Debug user state changes
+  useEffect(() => {
+    console.log('Register - Current user:', user);
+  }, [user]);
+
   const handleLoginRedirect = () => {
     console.log("Redirecting to login...");
     navigate("/login");
   };
 
   const onSubmit = async (data: RegisterInput) => {
-    console.log("Form submitted with data:", data);
     try {
+      console.log("Attempting registration...");
       await authRegister({
         username: data.username,
         email: data.email,
         password: data.password,
-        confirmpassword: data.confirmPassword, // ✅ correct key
-        role: "admin", // ✅ fixed role
+        confirmpassword: data.confirmPassword,
+        role: "admin",
       });
 
       toast.success("Registration successful!");
-      navigate("/");
-    } catch (error) {
-      console.error("Submission error:", error);
-
-      // Backend validation errors
-      if (error?.response.data.message) {
-        toast.error(error.response.data.message); // Example: "Username already taken"
-      } else {
-        toast.error(error instanceof Error ? error.message : "Registration failed");
-      }
+      // Small delay to ensure state propagation
+      setTimeout(() => {
+        navigate("/");
+      }, 100);
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      toast.error(error?.message || "Registration failed");
     }
   };
 
