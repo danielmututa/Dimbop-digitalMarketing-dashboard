@@ -1,6 +1,5 @@
 import { AuthResponse, LoginSchema } from './../lib/schemas/auth/login';
 import {RegisterInput, AuthRegisterResponse  } from "./../lib/schemas/auth/register";
-import { unexpectedErrorMessage } from "@/lib/utils";
 import axios from "axios";
 import { apiClient } from "@/context/axios";
 
@@ -12,19 +11,23 @@ import { apiClient } from "@/context/axios";
 
 export const loginApi = async (data: LoginSchema) : Promise<AuthResponse>=> {
   try {
-    const response = await apiClient.post("/api/auth/login", data);
+    const response = await apiClient.post('/api/auth/login', data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data.result);
-    } else {
-      throw new Error(`${unexpectedErrorMessage}`)
+      const backendError = error.response?.data;
+
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Login failed';
+
+      throw new Error(errorMessage);
     }
+
+    throw new Error('An unexpected error occurred');
   }
-}
-
-
-
+};
 
 
 
@@ -66,12 +69,6 @@ export const RegisterApi = async (data: RegisterInput): Promise<AuthRegisterResp
 
 
 
-
-
-
-
-
-// // delete
 // export const deleteUserApi = async (userId: string) => {
 //   try {
 //     const response = await apiClient.delete(`/users/${userId}`);
