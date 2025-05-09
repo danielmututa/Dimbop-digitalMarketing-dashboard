@@ -19,7 +19,6 @@ import {
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -58,12 +57,12 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
     }
   };
 
-  const handleView = (email: string) => {
-    const user = users.find(u => u.email === email);
-    if (user) {
-      setSelectedUser(user);
-    }
-  };
+  // const handleView = (email: string) => {
+  //   const user = users.find(u => u.email === email);
+  //   if (user) {
+  //     setSelectedUser(user);
+  //   }
+  // };
 
   if (loading) return <div className="text-center py-8">Loading users...</div>;
   if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
@@ -122,33 +121,29 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
                   </Button> */}
 
 
- {selectedUser && (
 <AlertDialog>
-  <AlertDialogTrigger>View</AlertDialogTrigger>
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>User Details</AlertDialogTitle>
-      <AlertDialogDescription>
-      Name: {selectedUser.username}
-   
-      </AlertDialogDescription>
-      <AlertDialogDescription>
-      Email: {selectedUser.email}
-      </AlertDialogDescription>
-
-      <AlertDialogDescription>
-      Role: {selectedUser.role}
-      </AlertDialogDescription>
-
-    </AlertDialogHeader>
-    <AlertDialogFooter>
-     
-      <AlertDialogAction>Cancel</AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
+  <AlertDialogTrigger asChild>
+    <Button
+      variant="outline"
+      onClick={() => setSelectedUser(user)} // set the user directly
+    >
+      View
+    </Button>
+  </AlertDialogTrigger>
+  {selectedUser?.email === user.email && (
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>User Details</AlertDialogTitle>
+        <AlertDialogDescription>Name: {selectedUser.username}</AlertDialogDescription>
+        <AlertDialogDescription>Email: {selectedUser.email}</AlertDialogDescription>
+        <AlertDialogDescription>Role: {selectedUser.role}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogAction onClick={() => setSelectedUser(null)}>Close</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  )}
 </AlertDialog>
-      )} 
-
 
 
 
@@ -201,6 +196,9 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
 };
 
 export default Users;
+
+
+
 
 
 
