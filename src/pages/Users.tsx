@@ -1,9 +1,11 @@
 import React from 'react';
 import useFetch from '@/hooks/useFetch';
+import { DeleteApi } from '@/api';
 import { useAuthStore } from '@/context/userContext';
 import { User } from '@/components/interfaces/auth';
 import { toast } from 'react-toastify';
 import { Button } from "@/components/ui/button"
+import apiClient from '@/context/axios';
 interface UserTableProps {
   onUserAction?: () => void;
 }
@@ -22,22 +24,21 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
   console.log('Loading state:', loading);
   console.log('Error state:', error);
 
-  const handleDelete = async (email: string) => {
+  const handleDelete = async (userId: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+    if (!confirmDelete) return;
+  
     try {
-      await apiClient.delete(`/users/${email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
+      await DeleteApi(userId.toString());
       toast.success('User deleted successfully');
       refetch();
       onUserAction?.();
-    } catch (error) {
-      toast.error('Failed to delete user');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete user');
       console.error('Delete error:', error);
     }
   };
+  
 
   const handleView = (email: string) => {
     const user = users.find(u => u.email === email);
@@ -90,12 +91,14 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
                   >
                     View
                   </Button>
-                  <Button variant="outline"
-                    onClick={() => handleDelete(user.email)}
-                    className="px-3 py-1 "
-                  >
-                    Delete
-                  </Button>
+                  <Button
+  variant="outline"
+  onClick={() => handleDelete(user.id)}  // ← this must now use user.id instead of email
+  className="px-3 py-1"
+>
+  Delete
+</Button>
+
                 </div>
               </td>
             </tr>

@@ -52,6 +52,27 @@ export const RegisterApi = async (data: RegisterInput): Promise<AuthRegisterResp
 };
 
 
+export const DeleteApi = async (userId: string) => {
+  try {
+    const response = await apiClient.delete(`/api/auth/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendError = error.response?.data;
+
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Deletion failed';
+
+      throw new Error(errorMessage);
+    }
+
+    throw new Error('An unexpected error occurred');
+  }
+}
+
+
 // Get user API (GET)
 // export const getAllUsersApi = async () => {
 //   try {
