@@ -19,18 +19,21 @@ interface Category {
 }
 
 const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
-  // State for product form inputs
+  // State for form inputs (combined product and category)
   const [formData, setFormData] = useState({
     image_url: "",
     name: "",
     description: "",
     price: "",
     stock_quantity: "",
-    category_name: "", // Changed to category_name
+    category_name: "", // Selected or new category name
     discount_percentage: "",
   });
 
-  // State for product form submission status
+  // State for toggling between selecting existing category or entering new one
+  const [useNewCategory, setUseNewCategory] = useState(false);
+
+  // State for form submission status
   const [submitStatus, setSubmitStatus] = useState<{
     loading: boolean;
     error: string | null;
@@ -41,38 +44,45 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     success: false,
   });
 
-  // State for category creation
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [categorySubmitStatus, setCategorySubmitStatus] = useState<{
-    loading: boolean;
-    error: string | null;
-    success: boolean;
-  }>({
-    loading: false,
-    error: null,
-    success: false,
-  });
-
   // State for categories (populated dynamically)
-  const [categories, setCategories] = useState<Category[]>([
-    { id: 4, name: "Electronics" }, 
-  ]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  // Fetch categories (placeholder; replace with actual endpoint if available)
+  // Fetch categories from /api/products
   const fetchCategories = async () => {
     try {
-      console.log("Fetching categories...");
-      // Replace with actual endpoint if available (e.g., /api/products/categories)
-      // const response = await fetch("/api/products/categories");
-      // if (!response.ok) throw new Error("Failed to fetch categories");
-      // const data = await response.json();
-      // setCategories(data);
+      console.log("Fetching categories from /api/products...");
+      const response = await fetch("/api/products", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const products = await response.json();
 
-      // For now, use fallback categories
-      setCategories([{ id: 4, name: "Electronics" }]);
+      // Extract unique categories from products
+      const uniqueCategories: Category[] = [];
+      const seenIds = new Set<number>();
+      for (const product of products) {
+        if (product.categories && product.categories.id && !seenIds.has(product.categories.id)) {
+          uniqueCategories.push({
+            id: product.categories.id,
+            name: product.categories.name,
+          });
+          seenIds.add(product.categories.id);
+        }
+      }
+
+      console.log("Fetched categories:", uniqueCategories);
+      setCategories(uniqueCategories);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      setCategories([{ id: 4, name: "Electronics" }]); // Fallback
+      setCategories([]);
+      setSubmitStatus({
+        loading: false,
+        error: "Failed to load categories. Please try again.",
+        success: false,
+      });
     }
   };
 
@@ -80,7 +90,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     fetchCategories();
   }, []);
 
-  // Handle product form input changes
+  // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -98,61 +108,16 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     }));
   };
 
-  // Handle new category input change
-  const handleNewCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCategoryName(e.target.value);
+  // Toggle between existing and new category
+  const toggleCategoryInput = () => {
+    setUseNewCategory((prev) => !prev);
+    setFormData((prev) => ({
+      ...prev,
+      category_name: "",
+    }));
   };
 
-  // Handle category creation
-  const handleCategorySubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCategoryName.trim()) {
-      setCategorySubmitStatus({
-        loading: false,
-        error: "Category name is required",
-        success: false,
-      });
-      return;
-    }
-
-    setCategorySubmitStatus({ loading: true, error: null, success: false });
-
-    try {
-      console.log("Creating category with name:", newCategoryName);
-      // Assume /api/products/newproduct can create a category by sending category_name
-      const response = await fetch("/api/products/newproduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ category_name: newCategoryName.trim() }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Category creation failed:", errorData);
-        throw new Error(errorData.message || "Failed to create category");
-      }
-
-      const result = await response.json();
-      console.log("Category created:", result);
-      // Assume backend returns the new category's id and name
-      setCategories((prev) => [
-        ...prev,
-        { id: result.category_id || prev.length + 1, name: newCategoryName.trim() },
-      ]);
-      setCategorySubmitStatus({ loading: false, error: null, success: true });
-      setNewCategoryName("");
-    } catch (error) {
-      setCategorySubmitStatus({
-        loading: false,
-        error: error instanceof Error ? error.message : "An error occurred while creating the category",
-        success: false,
-      });
-    }
-  };
-
-  // Handle product form submission
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ loading: true, error: null, success: false });
@@ -212,12 +177,11 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
         description: formData.description.trim() || null,
         price,
         stock_quantity: stock,
-        category_name: formData.category_name.trim(), // Send category_name
+        category_name: formData.category_name.trim(),
         discount_percentage: discount,
       };
 
-      console.log("Form data before submission:", formData);
-      console.log("Submitting product payload:", payload);
+      console.log("Submitting payload:", payload);
 
       const response = await fetch("/api/products/newproduct", {
         method: "POST",
@@ -229,12 +193,12 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Product creation failed:", errorData);
-        throw new Error(errorData.message || "Failed to create product");
+        console.error("Submission failed:", errorData);
+        throw new Error(errorData.message || "Failed to create product/category");
       }
 
       const result = await response.json();
-      console.log("Product created:", result);
+      console.log("Submission successful:", result);
       setSubmitStatus({ loading: false, error: null, success: true });
 
       // Reset form
@@ -247,6 +211,10 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
         category_name: "",
         discount_percentage: "",
       });
+      setUseNewCategory(false);
+
+      // Refresh categories to include any new ones created
+      await fetchCategories();
 
       if (onProductAction) {
         onProductAction();
@@ -254,7 +222,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     } catch (error) {
       setSubmitStatus({
         loading: false,
-        error: error instanceof Error ? error.message : "An error occurred while creating the product",
+        error: error instanceof Error ? error.message : "An error occurred while submitting",
         success: false,
       });
     }
@@ -262,41 +230,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
 
   return (
     <div className="w-full p-10">
-      {/* Category Creation Form */}
-      <div className="mb-8">
-        <h2 className="text-lg font-medium mb-4">Create New Category</h2>
-        <form onSubmit={handleCategorySubmit} className="space-y-4">
-          <div>
-            <label htmlFor="new_category" className="block text-sm font-medium">
-              Category Name *
-            </label>
-            <Input
-              id="new_category"
-              value={newCategoryName}
-              onChange={handleNewCategoryChange}
-              placeholder="Enter category name (e.g., Electronics)"
-              className="w-full"
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={categorySubmitStatus.loading}
-            className="w-full"
-          >
-            {categorySubmitStatus.loading ? "Creating..." : "Create Category"}
-          </Button>
-          {categorySubmitStatus.error && (
-            <p className="text-red-500 text-sm">{categorySubmitStatus.error}</p>
-          )}
-          {categorySubmitStatus.success && (
-            <p className="text-green-500 text-sm">Category created successfully!</p>
-          )}
-        </form>
-      </div>
-
-      {/* Product Creation Form */}
-      <h2 className="text-lg font-medium mb-4">Create New Product</h2>
+      <h2 className="text-lg font-medium mb-4">Create New Product/Category</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="image_url" className="block text-sm font-medium">
@@ -380,9 +314,30 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
           <label htmlFor="category_name" className="block text-sm font-medium">
             Product Category *
           </label>
-          {categories.length === 0 ? (
+          <div className="flex items-center space-x-2 mb-2">
+            <input
+              type="checkbox"
+              id="use_new_category"
+              checked={useNewCategory}
+              onChange={toggleCategoryInput}
+            />
+            <label htmlFor="use_new_category" className="text-sm">
+              Create new category
+            </label>
+          </div>
+          {useNewCategory ? (
+            <Input
+              id="category_name"
+              name="category_name"
+              className="w-full"
+              placeholder="Enter new category name (e.g., Books)"
+              value={formData.category_name}
+              onChange={handleInputChange}
+              required
+            />
+          ) : categories.length === 0 ? (
             <p className="text-red-500 text-sm">
-              No categories available. Please create a category first.
+              No categories available. Please enter a new category.
             </p>
           ) : (
             <Select
@@ -424,10 +379,10 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
         <div>
           <Button
             type="submit"
-            disabled={submitStatus.loading || categories.length === 0}
+            disabled={submitStatus.loading}
             className="w-full"
           >
-            {submitStatus.loading ? "Creating..." : "Create Product"}
+            {submitStatus.loading ? "Creating..." : "Create Product/Category"}
           </Button>
         </div>
 
@@ -435,7 +390,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
           <p className="text-red-500 text-sm">{submitStatus.error}</p>
         )}
         {submitStatus.success && (
-          <p className="text-green-500 text-sm">Product created successfully!</p>
+          <p className="text-green-500 text-sm">Product/Category created successfully!</p>
         )}
       </form>
     </div>
