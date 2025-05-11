@@ -4,11 +4,6 @@ import axios from "axios";
 import { apiClient } from "@/context/axios";
 
 
-
-
-
-
-
 export const loginApi = async (data: LoginSchema) : Promise<AuthResponse>=> {
   try {
     const response = await apiClient.post('/api/auth/login', data);

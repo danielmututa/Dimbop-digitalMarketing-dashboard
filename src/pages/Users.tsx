@@ -1,7 +1,6 @@
 import React from 'react';
 import useFetch from '@/hooks/useFetch';
 import { DeleteApi } from '@/api';
-// import { useAuthStore } from '@/context/userContext';
 import { User } from '@/components/interfaces/auth';
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -57,12 +56,6 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
     }
   };
 
-  // const handleView = (email: string) => {
-  //   const user = users.find(u => u.email === email);
-  //   if (user) {
-  //     setSelectedUser(user);
-  //   }
-  // };
 
   if (loading) return <div className="text-center py-8">Loading users...</div>;
   if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
@@ -72,23 +65,6 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
     <div className="w-full">
 
 
-
-
-
-      {/* {selectedUser && (
-        <div className="mb-4 p-4 bg-gray-100 rounded-lg">
-          <h3 className="font-bold">User Details</h3>
-          <p>Name: {selectedUser.username}</p>
-          <p>Email: {selectedUser.email}</p>
-          <p>Role: {selectedUser.role}</p>
-          <button 
-            onClick={() => setSelectedUser(null)}
-            className="mt-2 px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-          >
-            Close
-          </button>
-        </div>
-      )} */}
 
       <table className="w-full bg-white border border-gray-200">
         <thead>
@@ -107,20 +83,7 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
               <td className="py-3 text-start px-4 border-b border-gray-200 capitalize">{user.role}</td>
               <td className="py-3 px-4 border-b border-gray-200">
                 <div className="flex space-x-2">
-                  {/* <Button 
-                    variant="outline"
-                    onClick={() => handleView(user.email)}
-                    className="px-3 py-1"
-                  >
-
-
-
-
-
-                    View
-                  </Button> */}
-
-
+              
 <AlertDialog>
   <AlertDialogTrigger asChild>
     <Button
@@ -145,16 +108,6 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
   )}
 </AlertDialog>
 
-
-
-
-
-      
-
-
-
-
-                  
                   <Dialog open={deleteDialogOpen && userToDelete === user.id} onOpenChange={setDeleteDialogOpen}>
                     <DialogTrigger asChild>
                       <Button
