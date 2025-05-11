@@ -19,21 +19,16 @@ interface Category {
 }
 
 const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
-  // State for form inputs (combined product and category)
   const [formData, setFormData] = useState({
-    image_url: "",
     name: "",
     description: "",
     price: "",
     stock_quantity: "",
-    category_name: "", // Selected or new category name
+    category_name: "",
     discount_percentage: "",
   });
-
-  // State for toggling between selecting existing category or entering new one
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [useNewCategory, setUseNewCategory] = useState(false);
-
-  // State for form submission status
   const [submitStatus, setSubmitStatus] = useState<{
     loading: boolean;
     error: string | null;
@@ -43,11 +38,8 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     error: null,
     success: false,
   });
-
-  // State for categories (populated dynamically)
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Fetch categories from /api/products
   const fetchCategories = async () => {
     try {
       console.log("Fetching categories from /api/products...");
@@ -60,7 +52,6 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
       if (!response.ok) throw new Error("Failed to fetch products");
       const products = await response.json();
 
-      // Extract unique categories from products
       const uniqueCategories: Category[] = [];
       const seenIds = new Set<number>();
       for (const product of products) {
@@ -90,7 +81,6 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     fetchCategories();
   }, []);
 
-  // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -99,7 +89,11 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     }));
   };
 
-  // Handle category selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+  };
+
   const handleCategoryChange = (value: string) => {
     console.log("Selected category_name:", value);
     setFormData((prev) => ({
@@ -108,7 +102,6 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     }));
   };
 
-  // Toggle between existing and new category
   const toggleCategoryInput = () => {
     setUseNewCategory((prev) => !prev);
     setFormData((prev) => ({
@@ -117,12 +110,10 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ loading: true, error: null, success: false });
 
-    // Validation
     const missingFields: string[] = [];
     if (!formData.name.trim()) missingFields.push("name");
     if (!formData.price) missingFields.push("price");
@@ -138,7 +129,6 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
       return;
     }
 
-    // Parse inputs
     const price = parseFloat(formData.price);
     const stock = parseInt(formData.stock_quantity, 10);
     const discount = formData.discount_percentage
@@ -171,24 +161,22 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     }
 
     try {
-      const payload = {
-        image_url: formData.image_url.trim() || null,
-        name: formData.name.trim(),
-        description: formData.description.trim() || null,
-        price,
-        stock_quantity: stock,
-        category_name: formData.category_name.trim(),
-        discount_percentage: discount,
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name.trim());
+      formDataToSend.append("description", formData.description.trim() || "");
+      formDataToSend.append("price", formData.price);
+      formDataToSend.append("stock_quantity", formData.stock_quantity);
+      formDataToSend.append("category_name", formData.category_name.trim());
+      formDataToSend.append("discount_percentage", formData.discount_percentage || "0");
+      if (imageFile) {
+        formDataToSend.append("file", imageFile);
+      }
 
-      console.log("Submitting payload:", payload);
+      console.log("Submitting form data:", formDataToSend);
 
       const response = await fetch("/api/products/newproduct", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -201,9 +189,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
       console.log("Submission successful:", result);
       setSubmitStatus({ loading: false, error: null, success: true });
 
-      // Reset form
       setFormData({
-        image_url: "",
         name: "",
         description: "",
         price: "",
@@ -211,9 +197,9 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
         category_name: "",
         discount_percentage: "",
       });
+      setImageFile(null);
       setUseNewCategory(false);
 
-      // Refresh categories to include any new ones created
       await fetchCategories();
 
       if (onProductAction) {
@@ -231,18 +217,18 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
   return (
     <div className="w-full p-10">
       <h2 className="text-lg font-medium mb-4">Create New Product/Category</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         <div>
-          <label htmlFor="image_url" className="block text-sm font-medium">
-            Image URL (Optional)
+          <label htmlFor="image" className="block text-sm font-medium">
+            Product Image (Optional)
           </label>
           <Input
-            id="image_url"
-            name="image_url"
+            id="image"
+            name="file"
+            type="file"
+            accept="image/*"
             className="w-full"
-            placeholder="Enter image URL"
-            value={formData.image_url}
-            onChange={handleInputChange}
+            onChange={handleFileChange}
           />
         </div>
 
