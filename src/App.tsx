@@ -83,7 +83,7 @@ const ProductsPage = lazy(() => import('./pages/Products'));
 const UsersPage = lazy(() => import('./pages/Users'));
 const BlogPage = lazy(() => import('./pages/Blogs'));
 const LoginPage = lazy(() => import('./Auth/Login'));
-const RegisterPage = lazy(() => import('./Auth/Register'));
+const RegisterPage = lazy(() => import('./pages/ProductShowcase'));
 
 function App() {
   const { initializeAuth } = useAuthStore();
@@ -98,7 +98,7 @@ function App() {
         {/* Auth routes */}
         <Route element={<AuthRoute />}>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          
         </Route>
 
         {/* Protected routes */}
@@ -110,6 +110,7 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/blogs" element={<BlogPage />} />
+          <Route path="/prodt" element={<RegisterPage />} />
         </Route>
       </Routes>
     </Suspense>
