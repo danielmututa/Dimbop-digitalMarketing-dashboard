@@ -1,22 +1,6 @@
-
-// const fetchImages = async () => {
-//   try {
-//     const response = await fetch('/api/products/images', {
-//       method: 'GET',
-//       headers: { 'Content-Type': 'application/json' },
-//     });
-//     if (!response.ok) throw new Error('Failed to fetch images');
-//     const imageUrls = await response.json();
-//     console.log('Fetched image URLs:', imageUrls);
-//     // Use imageUrls in your component
-//   } catch (err) {
-//     console.error('Error fetching images:', err);
-//   }
-// };
-
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import useFetch from '@/hooks/useFetch';
 import {
   Table,
   TableBody,
@@ -35,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 interface Product {
@@ -48,14 +33,27 @@ interface Product {
   cart: { id: number; product_id: number; quantity: number }[];
 }
 
+// Define type for useFetch return value
+interface FetchResult<T> {
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+}
+
 const ProductShowcase: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; productId: number | null }>({
     open: false,
     productId: null,
   });
+  const [editDialog, setEditDialog] = useState<{
+    open: boolean;
+    product: Product | null;
+  }>({
+    open: false,
+    product: null,
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   // Base URL for backend
   const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
@@ -67,54 +65,203 @@ const ProductShowcase: React.FC = () => {
       return '/placeholder-image.jpg';
     }
     if (imageUrl.startsWith('http')) return imageUrl;
-    // Remove leading slash and ensure correct path
     return `${BASE_URL}${imageUrl}`;
   };
 
-  // Fetch all products
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/products', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const data = await response.json();
+  // Fetch all products using useFetch with typed return
+  const { data, loading, error } = useFetch<Product[]>('/api/products', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  }) as FetchResult<Product[]>;
+
+  useEffect(() => {
+    if (data) {
       console.log('Fetched products:', data);
-      // Log image URLs for debugging
       data.forEach((product: Product) => {
         const fullUrl = getImageUrl(product.image_url);
         console.log(`Product: ${product.name}, Raw image_url: ${product.image_url}, Full URL: ${fullUrl}`);
       });
       setProducts(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('Failed to load products. Please try again.');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [data]);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (error) {
+      console.error('Error fetching products:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to load products: ${errorMessage}`);
+    }
+  }, [error]);
+
+  // Handle file input change with validation
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      // Validate file type and size (max 5MB, images only)
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (!validTypes.includes(file.type)) {
+        toast.error('Please upload a valid image (JPEG, PNG, or GIF).');
+        setImageFile(null);
+        return;
+      }
+      if (file.size > maxSize) {
+        toast.error('Image size must be less than 5MB.');
+        setImageFile(null);
+        return;
+      }
+    }
+    setImageFile(file);
+  };
 
   // Handle product deletion
   const handleDelete = async (productId: number) => {
     try {
-      const response = await fetch(`/api/products/${productId}`, {
+      const deleteUrl = `${BASE_URL}/api/products/${productId}`;
+      console.log(`Sending DELETE request to: ${deleteUrl}`);
+      const response = await fetch(deleteUrl, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!response.ok) throw new Error('Failed to delete product');
+
+      console.log(`DELETE response status: ${response.status}, statusText: ${response.statusText}`);
+
+      if (!response.ok) {
+        let errorText = 'No error message provided';
+        try {
+          errorText = await response.text();
+        } catch (textError) {
+          console.warn('Could not parse error response:', textError);
+        }
+        throw new Error(`Failed to delete product: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
       setProducts(products.filter((product) => product.id !== productId));
       setDeleteDialog({ open: false, productId: null });
       toast.success('Product deleted successfully.');
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error deleting product:', err);
-      toast.error('Failed to delete product.');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      toast.error(`Failed to delete product: ${errorMessage}`);
+    }
+  };
+
+  // Handle product update
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editDialog.product) return;
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const name = formData.get('name') as string;
+      const priceStr = formData.get('price') as string;
+      const stockStr = formData.get('stock_quantity') as string;
+      const discountStr = formData.get('discount_percentage') as string;
+
+      // Validation
+      const missingFields: string[] = [];
+      if (!name.trim()) missingFields.push('name');
+      if (!priceStr) missingFields.push('price');
+      if (!stockStr) missingFields.push('stock quantity');
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+      }
+
+      const price = parseFloat(priceStr);
+      const stock_quantity = parseInt(stockStr, 10);
+      const discount_percentage = discountStr ? parseInt(discountStr, 10) : 0;
+
+      if (isNaN(price) || price <= 0) {
+        throw new Error('Price must be a positive number');
+      }
+      if (isNaN(stock_quantity) || stock_quantity < 0) {
+        throw new Error('Stock quantity must be a non-negative integer');
+      }
+      if (discount_percentage < 0) {
+        throw new Error('Discount percentage cannot be negative');
+      }
+
+      // Prepare FormData for update
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', name);
+      formDataToSend.append('price', priceStr);
+      formDataToSend.append('stock_quantity', stockStr);
+      formDataToSend.append('discount_percentage', discountStr || '0');
+      formDataToSend.append('description', '');
+      formDataToSend.append('category_name', editDialog.product.categories?.name || 'General');
+      formDataToSend.append('category_id', editDialog.product.categories?.id.toString() || '');
+      if (imageFile) {
+        formDataToSend.append('file', imageFile);
+        formDataToSend.append('image', imageFile); // Fallback field
+      }
+
+      const updateUrl = `${BASE_URL}/api/products/${editDialog.product.id}`;
+      console.log('Sending update data (FormData) to:', updateUrl);
+      console.log('FormData fields:', {
+        name,
+        price: priceStr,
+        stock_quantity: stockStr,
+        discount_percentage: discountStr || '0',
+        description: '',
+        category_name: editDialog.product.categories?.name || 'General',
+        category_id: editDialog.product.categories?.id || '',
+        file: imageFile?.name || 'none',
+        image: imageFile?.name || 'none',
+      });
+
+      let response = await fetch(updateUrl, {
+        method: 'PUT',
+        body: formDataToSend,
+      });
+
+      // Fallback to JSON if FormData fails
+      if (!response.ok) {
+        console.warn('FormData update failed, trying JSON:', await response.text());
+        const updatedProduct = {
+          name,
+          price: priceStr,
+          stock_quantity,
+          discount_percentage,
+          image_url: editDialog.product.image_url, // Retain existing image_url
+          description: '',
+          category_name: editDialog.product.categories?.name || 'General',
+          category_id: editDialog.product.categories?.id || null,
+        };
+
+        console.log('Sending update data (JSON) to:', updateUrl);
+        console.log('JSON payload:', updatedProduct);
+
+        response = await fetch(updateUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedProduct),
+        });
+      }
+
+      if (!response.ok) {
+        let errorText = 'No error message provided';
+        try {
+          errorText = await response.text();
+        } catch (textError) {
+          console.warn('Could not parse error response:', textError);
+        }
+        throw new Error(`Failed to update product: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const updatedProductData = await response.json();
+      console.log('Received updated product:', updatedProductData);
+
+      setProducts(
+        products.map((product) =>
+          product.id === updatedProductData.id ? updatedProductData : product
+        )
+      );
+      setEditDialog({ open: false, product: null });
+      setImageFile(null);
+      toast.success('Product updated successfully.');
+    } catch (err: unknown) {
+      console.error('Error updating product:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      toast.error(`Failed to update product: ${errorMessage}`);
     }
   };
 
@@ -122,12 +269,16 @@ const ProductShowcase: React.FC = () => {
     <div className="w-full p-10">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Product Showcase</h2>
-        <Link to="/products/create">
+        <Link to="/products">
           <Button>Create Product</Button>
         </Link>
       </div>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && (
+        <p className="text-red-500 mb-4">
+          {(error instanceof Error ? error.message : 'Failed to load products.')}
+        </p>
+      )}
       {loading ? (
         <p>Loading products...</p>
       ) : products.length === 0 ? (
@@ -170,9 +321,123 @@ const ProductShowcase: React.FC = () => {
                 <TableCell>{product.stock_quantity}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Link to={`/products/edit/${product.id}`}>
-                      <Button variant="outline">Edit</Button>
-                    </Link>
+                    {/* Edit Dialog */}
+                    <Dialog
+                      open={editDialog.open && editDialog.product?.id === product.id}
+                      onOpenChange={(open) =>
+                        setEditDialog({ open, product: open ? product : null })
+                      }
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline">Edit</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Edit Product</DialogTitle>
+                          <DialogDescription>
+                            Update the details for "{product.name}".
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleUpdate} encType="multipart/form-data">
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <label
+                                htmlFor="name"
+                                className="text-sm font-medium text-right"
+                              >
+                                Name
+                              </label>
+                              <Input
+                                id="name"
+                                name="name"
+                                defaultValue={product.name}
+                                className="col-span-3"
+                                required
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <label
+                                htmlFor="price"
+                                className="text-sm font-medium text-right"
+                              >
+                                Price
+                              </label>
+                              <Input
+                                id="price"
+                                name="price"
+                                type="number"
+                                step="0.01"
+                                defaultValue={parseFloat(product.price)}
+                                className="col-span-3"
+                                required
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <label
+                                htmlFor="stock_quantity"
+                                className="text-sm font-medium text-right"
+                              >
+                                Stock Quantity
+                              </label>
+                              <Input
+                                id="stock_quantity"
+                                name="stock_quantity"
+                                type="number"
+                                defaultValue={product.stock_quantity}
+                                className="col-span-3"
+                                required
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <label
+                                htmlFor="image"
+                                className="text-sm font-medium text-right"
+                              >
+                                Image
+                              </label>
+                              <Input
+                                id="image"
+                                name="file"
+                                type="file"
+                                accept="image/*"
+                                className="col-span-3"
+                                onChange={handleFileChange}
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <label
+                                htmlFor="discount_percentage"
+                                className="text-sm font-medium text-right"
+                              >
+                                Discount (%)
+                              </label>
+                              <Input
+                                id="discount_percentage"
+                                name="discount_percentage"
+                                type="number"
+                                defaultValue={product.discount_percentage}
+                                className="col-span-3"
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setEditDialog({ open: false, product: null });
+                                setImageFile(null);
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button type="submit">Save</Button>
+                          </DialogFooter>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Delete Dialog */}
                     <Dialog
                       open={deleteDialog.open && deleteDialog.productId === product.id}
                       onOpenChange={(open) =>

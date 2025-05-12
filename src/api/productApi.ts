@@ -90,6 +90,8 @@ export const UpdateProduct = async (id: string, data: ProductSM) : Promise<Produ
   }
 };
 
+
+
 export const DeleteProduct = async (id: string) : Promise<ProductSM>=> {
   try {
     const response = await apiClient.delete(`/api/products/${id}`);
