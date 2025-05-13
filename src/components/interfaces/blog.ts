@@ -90,6 +90,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     meta_og_title: "",
     meta_og_url: "",
     meta_og_image: "",
+    meta_facebook_id: "",
     meta_site_name: "",
     meta_post_twitter: "",
     status: "visible",
@@ -149,12 +150,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           const response = await GetBlogById(id);
           if (response.data && response.data.length > 0) {
             const blog = response.data[0]; // Assuming single blog object
-            const { author_id, blog_type_id, meta_facebook_id, ...filteredBlog } = blog;
-            // Ensure categories is a string if it’s an array or object from the backend
-            setFormData({
-              ...filteredBlog,
-              categories: Array.isArray(filteredBlog.categories) ? filteredBlog.categories.join(",") : filteredBlog.categories || "",
-            });
+            setFormData(blog);
           } else {
             throw new Error("Blog not found");
           }
@@ -196,6 +192,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         blog_images: [...prev.blog_images, ...newFiles],
       }));
       
+      // Create preview URLs for the new blog images
       newFiles.forEach((file, index) => {
         const previewUrl = URL.createObjectURL(file);
         setImagePreview((prev) => ({
@@ -210,6 +207,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         [field]: file,
       }));
       
+      // Create preview URL for the file
       const previewUrl = URL.createObjectURL(file);
       setImagePreview((prev) => ({
         ...prev,
@@ -237,7 +235,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     e.preventDefault();
     setSubmitStatus({ loading: true, error: null, success: false });
 
-    const requiredFields = ["title", "description", "content", "categories", "status"];
+    const requiredFields = ["title", "description", "content"];
     const missingFields = requiredFields.filter(
       (field) => !formData[field as keyof typeof formData]?.toString().trim()
     );
@@ -251,39 +249,44 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
       return;
     }
 
+    if (!formData.categories?.trim()) {
+      setSubmitStatus({
+        loading: false,
+        error: "Please select or create a category",
+        success: false,
+      });
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
-
-      // Append only non-empty text fields
+      
+      // Append all text fields
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== "blog_images" && value && value.toString().trim()) {
+        if (key !== "blog_images" && value !== undefined && value !== null) {
           formDataToSend.append(key, value.toString());
         }
       });
-
-      // Append image files only if they exist
+      
+      // Append single image files
       Object.entries(imageFiles).forEach(([key, value]) => {
-        if (value && key !== "blog_images") {
+        if (key !== "blog_images" && value) {
           formDataToSend.append(key, value);
         }
       });
-
+      
       // Append blog_images array
       imageFiles.blog_images.forEach((file, index) => {
         formDataToSend.append(`blog_images[${index}]`, file);
       });
-
-      // Log the payload for debugging (check browser console)
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
 
       const response = id 
         ? await UpdateBlog(id, formDataToSend) 
         : await CreateBlog(formDataToSend);
 
       setSubmitStatus({ loading: false, error: null, success: true });
-
+      
+      // Reset form
       setFormData({
         title: "",
         description: "",
@@ -323,19 +326,21 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         meta_og_title: "",
         meta_og_url: "",
         meta_og_image: "",
+        meta_facebook_id: "",
         meta_site_name: "",
         meta_post_twitter: "",
         status: "visible",
         blog_images: [],
       });
-
+      
+      // Reset image files and previews
       setImageFiles({ blog_images: [] });
       setImagePreview({});
       setUseNewCategory(false);
 
       await fetchCategories();
       if (onBlogAction) onBlogAction();
-      navigate("/");
+      navigate("/"); // Redirect to blog list or homepage
     } catch (error) {
       setSubmitStatus({
         loading: false,
@@ -696,6 +701,34 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           />
         </div>
         <div>
+          <label htmlFor="author_id" className="block text-sm font-medium">
+            Author ID (Optional)
+          </label>
+          <Input
+            id="author_id"
+            name="author_id"
+            type="number"
+            className="w-full"
+            placeholder="Enter author ID"
+            value={formData.author_id?.toString() || ""}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="blog_type_id" className="block text-sm font-medium">
+            Blog Type ID (Optional)
+          </label>
+          <Input
+            id="blog_type_id"
+            name="blog_type_id"
+            type="number"
+            className="w-full"
+            placeholder="Enter blog type ID"
+            value={formData.blog_type_id?.toString() || ""}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
           <label htmlFor="epigraph" className="block text-sm font-medium">
             Epigraph (Optional)
           </label>
@@ -965,6 +998,19 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             className="w-full"
             placeholder="Enter meta OG URL"
             value={formData.meta_og_url || ""}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="meta_facebook_id" className="block text-sm font-medium">
+            Meta Facebook ID (Optional)
+          </label>
+          <Input
+            id="meta_facebook_id"
+            name="meta_facebook_id"
+            className="w-full"
+            placeholder="Enter meta Facebook ID"
+            value={formData.meta_facebook_id || ""}
             onChange={handleInputChange}
           />
         </div>
