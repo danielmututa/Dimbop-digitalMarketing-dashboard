@@ -1,22 +1,18 @@
-// src/components/Blogs.tsx
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  CreateBlog,
-  GetBlogs,
-  GetBlogById,
-  UpdateBlog,
-} from "@/api";
-import { BlogPostSM } from "@/lib/schemas/blogs/blog";
+} from '@/components/ui/select';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { CreateBlog, GetBlogById, UpdateBlog } from '@/api';
+import { BlogPostSM } from '@/lib/schemas/blogs/blog';
+import { apiClient } from '@/context/axios';
+import axios from 'axios';
 
 interface BlogsProps {
   onBlogAction?: () => void;
@@ -28,7 +24,6 @@ interface Category {
 }
 
 interface BlogImage {
-  id?: number;
   image_url: string;
 }
 
@@ -49,50 +44,50 @@ interface ImageFiles {
 }
 
 const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
-  const { id } = useParams<{ id: string }>(); // For editing
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<BlogPostSM>>({
-    title: "",
-    description: "",
-    content: "",
-    image_url: "",
-    hero_image: "",
-    blog_image_one: "",
-    blog_image_two: "",
-    blog_image_three: "",
-    author_avatar: "",
-    epigraph: "",
-    first_paragraph: "",
-    second_paragraph: "",
-    third_paragraph: "",
-    fourth_paragraph: "",
-    fifth_paragraph: "",
-    annotation_image_one: "",
-    annotation_image_two: "",
-    annotation_image_three: "",
-    annotation_image_four: "",
-    annotation_image_five: "",
-    point_one_title: "",
-    point_one_description: "",
-    point_two_title: "",
-    point_two_description: "",
-    point_three_title: "",
-    point_three_description: "",
-    point_four_title: "",
-    point_four_description: "",
-    point_five_title: "",
-    point_five_description: "",
-    categories: "",
-    more_blogs: "",
-    meta_description: "",
-    keywords: "",
-    meta_author: "",
-    meta_og_title: "",
-    meta_og_url: "",
-    meta_og_image: "",
-    meta_site_name: "",
-    meta_post_twitter: "",
-    status: "visible",
+    title: '',
+    description: '',
+    content: '',
+    image_url: '',
+    hero_image: '',
+    blog_image_one: '',
+    blog_image_two: '',
+    blog_image_three: '',
+    author_avatar: '',
+    epigraph: '',
+    first_paragraph: '',
+    second_paragraph: '',
+    third_paragraph: '',
+    fourth_paragraph: '',
+    fifth_paragraph: '',
+    annotation_image_one: '',
+    annotation_image_two: '',
+    annotation_image_three: '',
+    annotation_image_four: '',
+    annotation_image_five: '',
+    point_one_title: '',
+    point_one_description: '',
+    point_two_title: '',
+    point_two_description: '',
+    point_three_title: '',
+    point_three_description: '',
+    point_four_title: '',
+    point_four_description: '',
+    point_five_title: '',
+    point_five_description: '',
+    categories: '',
+    more_blogs: '',
+    meta_description: '',
+    keywords: '',
+    meta_author: '',
+    meta_og_title: '',
+    meta_og_url: '',
+    meta_og_image: '',
+    meta_site_name: '',
+    meta_post_twitter: '',
+    status: 'visible',
     blog_images: [],
   });
   const [imageFiles, setImageFiles] = useState<ImageFiles>({ blog_images: [] });
@@ -109,60 +104,43 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
   });
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Fetch categories from blogs
-  const fetchCategories = async () => {
-    try {
-      const response = await GetBlogs();
-      const uniqueCategories: Category[] = [];
-      const seenIds = new Set<number>();
-      
-      response.data.forEach((blog: BlogPostSM) => {
-        if (blog.categories && blog.id && !seenIds.has(blog.id)) {
-          const categoryName = blog.categories.split(",")[0].trim();
-          if (categoryName) {
-            uniqueCategories.push({
-              id: blog.id,
-              name: categoryName,
-            });
-            seenIds.add(blog.id);
-          }
-        }
-      });
-      setCategories(uniqueCategories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      setCategories([]);
-      setSubmitStatus({
-        loading: false,
-        error: "Failed to load categories. Please try again.",
-        success: false,
-      });
-    }
-  };
-
-  // Fetch blog for editing
+  // Fetch categories
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apiClient.get('/api/categories');
+        const fetchedCategories: Category[] = response.data.map(
+          (cat: { id: number; name: string }) => ({
+            id: cat.id,
+            name: cat.name,
+          })
+        );
+        setCategories(fetchedCategories);
+      } catch (error) {
+        setCategories([]);
+        setSubmitStatus({
+          loading: false,
+          error: 'Failed to load categories. Please try again.',
+          success: false,
+        });
+      }
+    };
+
     fetchCategories();
+
     if (id) {
       const fetchBlog = async () => {
         try {
-          const response = await GetBlogById(id);
-          if (response.data && response.data.length > 0) {
-            const blog = response.data[0]; // Assuming single blog object
-            const { author_id, blog_type_id, meta_facebook_id, ...filteredBlog } = blog;
-            // Ensure categories is a string if it’s an array or object from the backend
-            setFormData({
-              ...filteredBlog,
-              categories: Array.isArray(filteredBlog.categories) ? filteredBlog.categories.join(",") : filteredBlog.categories || "",
-            });
-          } else {
-            throw new Error("Blog not found");
-          }
+          const blog = await GetBlogById(id);
+          setFormData({
+            ...blog,
+            categories: blog.categories || '',
+            blog_images: blog.blog_images || [],
+          });
         } catch (error) {
-          console.error("Error fetching blog:", error);
           setSubmitStatus({
             loading: false,
-            error: "Failed to load blog.",
+            error: 'Failed to load blog.',
             success: false,
           });
         }
@@ -195,7 +173,6 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         ...prev,
         blog_images: [...prev.blog_images, ...newFiles],
       }));
-      
       newFiles.forEach((file, index) => {
         const previewUrl = URL.createObjectURL(file);
         setImagePreview((prev) => ({
@@ -209,7 +186,6 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         ...prev,
         [field]: file,
       }));
-      
       const previewUrl = URL.createObjectURL(file);
       setImagePreview((prev) => ({
         ...prev,
@@ -229,15 +205,30 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     setUseNewCategory((prev) => !prev);
     setFormData((prev) => ({
       ...prev,
-      categories: "",
+      categories: '',
     }));
+  };
+
+  const createNewCategory = async (categoryName: string): Promise<string> => {
+    try {
+      const response = await apiClient.post('/api/categories', { name: categoryName });
+      const newCategory: Category = response.data;
+      setCategories((prev) => [...prev, newCategory]);
+      return newCategory.name;
+    } catch (error) {
+      throw new Error(
+        axios.isAxiosError(error)
+          ? error.response?.data?.message || 'Failed to create category'
+          : 'An unexpected error occurred'
+      );
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ loading: true, error: null, success: false });
 
-    const requiredFields = ["title", "description", "content", "categories", "status"];
+    const requiredFields = ['title', 'description', 'content', 'categories', 'status'];
     const missingFields = requiredFields.filter(
       (field) => !formData[field as keyof typeof formData]?.toString().trim()
     );
@@ -245,7 +236,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     if (missingFields.length > 0) {
       setSubmitStatus({
         loading: false,
-        error: `Please fill in the following required fields: ${missingFields.join(", ")}`,
+        error: `Please fill in the following required fields: ${missingFields.join(', ')}`,
         success: false,
       });
       return;
@@ -253,17 +244,36 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
 
     try {
       const formDataToSend = new FormData();
+      let finalCategory = formData.categories || '';
 
-      // Append only non-empty text fields
+      // Create new category if useNewCategory is checked
+      if (useNewCategory && finalCategory) {
+        finalCategory = await createNewCategory(finalCategory);
+      }
+
+      // Append text fields (exclude backend-generated fields)
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== "blog_images" && value && value.toString().trim()) {
-          formDataToSend.append(key, value.toString());
+        if (
+          key !== 'blog_images' &&
+          key !== 'id' &&
+          key !== 'created_at' &&
+          key !== 'author_id' &&
+          key !== 'blog_type_id' &&
+          key !== 'meta_facebook_id' &&
+          value &&
+          value.toString().trim()
+        ) {
+          if (key === 'categories') {
+            formDataToSend.append(key, finalCategory);
+          } else {
+            formDataToSend.append(key, value.toString());
+          }
         }
       });
 
-      // Append image files only if they exist
+      // Append image files
       Object.entries(imageFiles).forEach(([key, value]) => {
-        if (value && key !== "blog_images") {
+        if (value && key !== 'blog_images') {
           formDataToSend.append(key, value);
         }
       });
@@ -273,73 +283,72 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         formDataToSend.append(`blog_images[${index}]`, file);
       });
 
-      // Log the payload for debugging (check browser console)
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
-
-      const response = id 
-        ? await UpdateBlog(id, formDataToSend) 
+      const response = id
+        ? await UpdateBlog(id, formDataToSend)
         : await CreateBlog(formDataToSend);
+
+      if (!response.title) {
+        throw new Error('Invalid response from server: missing title');
+      }
 
       setSubmitStatus({ loading: false, error: null, success: true });
 
+      // Reset form
       setFormData({
-        title: "",
-        description: "",
-        content: "",
-        image_url: "",
-        hero_image: "",
-        blog_image_one: "",
-        blog_image_two: "",
-        blog_image_three: "",
-        author_avatar: "",
-        epigraph: "",
-        first_paragraph: "",
-        second_paragraph: "",
-        third_paragraph: "",
-        fourth_paragraph: "",
-        fifth_paragraph: "",
-        annotation_image_one: "",
-        annotation_image_two: "",
-        annotation_image_three: "",
-        annotation_image_four: "",
-        annotation_image_five: "",
-        point_one_title: "",
-        point_one_description: "",
-        point_two_title: "",
-        point_two_description: "",
-        point_three_title: "",
-        point_three_description: "",
-        point_four_title: "",
-        point_four_description: "",
-        point_five_title: "",
-        point_five_description: "",
-        categories: "",
-        more_blogs: "",
-        meta_description: "",
-        keywords: "",
-        meta_author: "",
-        meta_og_title: "",
-        meta_og_url: "",
-        meta_og_image: "",
-        meta_site_name: "",
-        meta_post_twitter: "",
-        status: "visible",
+        title: '',
+        description: '',
+        content: '',
+        image_url: '',
+        hero_image: '',
+        blog_image_one: '',
+        blog_image_two: '',
+        blog_image_three: '',
+        author_avatar: '',
+        epigraph: '',
+        first_paragraph: '',
+        second_paragraph: '',
+        third_paragraph: '',
+        fourth_paragraph: '',
+        fifth_paragraph: '',
+        annotation_image_one: '',
+        annotation_image_two: '',
+        annotation_image_three: '',
+        annotation_image_four: '',
+        annotation_image_five: '',
+        point_one_title: '',
+        point_one_description: '',
+        point_two_title: '',
+        point_two_description: '',
+        point_three_title: '',
+        point_three_description: '',
+        point_four_title: '',
+        point_four_description: '',
+        point_five_title: '',
+        point_five_description: '',
+        categories: '',
+        more_blogs: '',
+        meta_description: '',
+        keywords: '',
+        meta_author: '',
+        meta_og_title: '',
+        meta_og_url: '',
+        meta_og_image: '',
+        meta_site_name: '',
+        meta_post_twitter: '',
+        status: 'visible',
         blog_images: [],
       });
-
       setImageFiles({ blog_images: [] });
       setImagePreview({});
       setUseNewCategory(false);
 
-      await fetchCategories();
       if (onBlogAction) onBlogAction();
-      navigate("/");
+      navigate('/');
     } catch (error) {
+      console.error('Error submitting blog:', error);
       setSubmitStatus({
         loading: false,
-        error: error instanceof Error ? error.message : "An error occurred while submitting",
+        error: error instanceof Error ? error.message : 'An error occurred while submitting',
         success: false,
       });
     }
@@ -347,7 +356,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
 
   return (
     <div className="w-full p-10">
-      <h2 className="text-lg font-medium mb-4">{id ? "Edit Blog" : "Create New Blog"}</h2>
+      <h2 className="text-lg font-medium mb-4">{id ? 'Edit Blog' : 'Create New Blog'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         {/* Image Uploads with Previews */}
         <div>
@@ -356,9 +365,9 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           </label>
           {(formData.image_url || imagePreview.image_url) && (
             <div className="mb-2">
-              <img 
-                src={imagePreview.image_url || formData.image_url} 
-                alt="Image URL" 
+              <img
+                src={imagePreview.image_url || formData.image_url}
+                alt="Image URL"
                 className="w-32 h-32 object-cover"
               />
             </div>
@@ -369,7 +378,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "image_url")}
+            onChange={(e) => handleFileChange(e, 'image_url')}
           />
         </div>
         <div>
@@ -378,10 +387,10 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           </label>
           {(formData.hero_image || imagePreview.hero_image) && (
             <div className="mb-2">
-              <img 
-                src={imagePreview.hero_image || formData.hero_image} 
-                alt="Hero Image" 
-                className="w-32 h-32 object-cover" 
+              <img
+                src={imagePreview.hero_image || formData.hero_image}
+                alt="Hero Image"
+                className="w-32 h-32 object-cover"
               />
             </div>
           )}
@@ -391,7 +400,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "hero_image")}
+            onChange={(e) => handleFileChange(e, 'hero_image')}
           />
         </div>
         <div>
@@ -400,10 +409,10 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           </label>
           {(formData.blog_image_one || imagePreview.blog_image_one) && (
             <div className="mb-2">
-              <img 
-                src={imagePreview.blog_image_one || formData.blog_image_one} 
-                alt="Blog Image 1" 
-                className="w-32 h-32 object-cover" 
+              <img
+                src={imagePreview.blog_image_one || formData.blog_image_one}
+                alt="Blog Image 1"
+                className="w-32 h-32 object-cover"
               />
             </div>
           )}
@@ -413,7 +422,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "blog_image_one")}
+            onChange={(e) => handleFileChange(e, 'blog_image_one')}
           />
         </div>
         <div>
@@ -422,10 +431,10 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           </label>
           {(formData.blog_image_two || imagePreview.blog_image_two) && (
             <div className="mb-2">
-              <img 
-                src={imagePreview.blog_image_two || formData.blog_image_two} 
-                alt="Blog Image 2" 
-                className="w-32 h-32 object-cover" 
+              <img
+                src={imagePreview.blog_image_two || formData.blog_image_two}
+                alt="Blog Image 2"
+                className="w-32 h-32 object-cover"
               />
             </div>
           )}
@@ -435,7 +444,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "blog_image_two")}
+            onChange={(e) => handleFileChange(e, 'blog_image_two')}
           />
         </div>
         <div>
@@ -444,10 +453,10 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           </label>
           {(formData.blog_image_three || imagePreview.blog_image_three) && (
             <div className="mb-2">
-              <img 
-                src={imagePreview.blog_image_three || formData.blog_image_three} 
-                alt="Blog Image 3" 
-                className="w-32 h-32 object-cover" 
+              <img
+                src={imagePreview.blog_image_three || formData.blog_image_three}
+                alt="Blog Image 3"
+                className="w-32 h-32 object-cover"
               />
             </div>
           )}
@@ -457,7 +466,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "blog_image_three")}
+            onChange={(e) => handleFileChange(e, 'blog_image_three')}
           />
         </div>
         <div>
@@ -466,10 +475,10 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           </label>
           {(formData.author_avatar || imagePreview.author_avatar) && (
             <div className="mb-2">
-              <img 
-                src={imagePreview.author_avatar || formData.author_avatar} 
-                alt="Author Avatar" 
-                className="w-32 h-32 object-cover" 
+              <img
+                src={imagePreview.author_avatar || formData.author_avatar}
+                alt="Author Avatar"
+                className="w-32 h-32 object-cover"
               />
             </div>
           )}
@@ -479,7 +488,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "author_avatar")}
+            onChange={(e) => handleFileChange(e, 'author_avatar')}
           />
         </div>
         <div>
@@ -501,7 +510,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "annotation_image_one")}
+            onChange={(e) => handleFileChange(e, 'annotation_image_one')}
           />
         </div>
         <div>
@@ -523,7 +532,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "annotation_image_two")}
+            onChange={(e) => handleFileChange(e, 'annotation_image_two')}
           />
         </div>
         <div>
@@ -545,7 +554,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "annotation_image_three")}
+            onChange={(e) => handleFileChange(e, 'annotation_image_three')}
           />
         </div>
         <div>
@@ -567,7 +576,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "annotation_image_four")}
+            onChange={(e) => handleFileChange(e, 'annotation_image_four')}
           />
         </div>
         <div>
@@ -589,7 +598,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "annotation_image_five")}
+            onChange={(e) => handleFileChange(e, 'annotation_image_five')}
           />
         </div>
         <div>
@@ -611,7 +620,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => handleFileChange(e, "meta_og_image")}
+            onChange={(e) => handleFileChange(e, 'meta_og_image')}
           />
         </div>
         <div>
@@ -619,27 +628,26 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             Additional Blog Images (Optional)
           </label>
           <div className="mb-2 flex flex-wrap gap-2">
-            {formData.blog_images && formData.blog_images.length > 0 && 
-              formData.blog_images.map((image, index) => (
+            {formData.blog_images &&
+              formData.blog_images.length > 0 &&
+              formData.blog_images.map((image: BlogImage, index: number) => (
                 <img
-                  key={image.id || `existing-${index}`}
+                  key={`existing-${index}`}
                   src={image.image_url}
                   alt={`Blog Image ${index + 1}`}
                   className="w-32 h-32 object-cover"
                 />
-              ))
-            }
+              ))}
             {Object.entries(imagePreview)
               .filter(([key]) => key.startsWith('blog_images_'))
               .map(([key, url]) => (
                 <img
                   key={key}
                   src={url}
-                  alt={`New Blog Image`}
+                  alt="New Blog Image"
                   className="w-32 h-32 object-cover"
                 />
-              ))
-            }
+              ))}
           </div>
           <Input
             id="blog_images"
@@ -648,7 +656,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             accept="image/*"
             multiple
             className="w-full"
-            onChange={(e) => handleFileChange(e, "blog_images", true)}
+            onChange={(e) => handleFileChange(e, 'blog_images', true)}
           />
         </div>
 
@@ -662,7 +670,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="title"
             className="w-full"
             placeholder="Enter blog title"
-            value={formData.title || ""}
+            value={formData.title || ''}
             onChange={handleInputChange}
             required
           />
@@ -676,7 +684,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="description"
             className="w-full"
             placeholder="Enter blog description"
-            value={formData.description || ""}
+            value={formData.description || ''}
             onChange={handleInputChange}
             required
           />
@@ -690,7 +698,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="content"
             className="w-full p-2 border rounded-md"
             placeholder="Enter blog content"
-            value={formData.content || ""}
+            value={formData.content || ''}
             onChange={handleInputChange}
             required
           />
@@ -704,7 +712,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="epigraph"
             className="w-full"
             placeholder="Enter epigraph"
-            value={formData.epigraph || ""}
+            value={formData.epigraph || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -717,7 +725,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="first_paragraph"
             className="w-full p-2 border rounded-md"
             placeholder="Enter first paragraph"
-            value={formData.first_paragraph || ""}
+            value={formData.first_paragraph || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -730,7 +738,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="second_paragraph"
             className="w-full p-2 border rounded-md"
             placeholder="Enter second paragraph"
-            value={formData.second_paragraph || ""}
+            value={formData.second_paragraph || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -743,7 +751,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="third_paragraph"
             className="w-full p-2 border rounded-md"
             placeholder="Enter third paragraph"
-            value={formData.third_paragraph || ""}
+            value={formData.third_paragraph || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -756,7 +764,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="fourth_paragraph"
             className="w-full p-2 border rounded-md"
             placeholder="Enter fourth paragraph"
-            value={formData.fourth_paragraph || ""}
+            value={formData.fourth_paragraph || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -769,7 +777,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="fifth_paragraph"
             className="w-full p-2 border rounded-md"
             placeholder="Enter fifth paragraph"
-            value={formData.fifth_paragraph || ""}
+            value={formData.fifth_paragraph || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -782,7 +790,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_one_title"
             className="w-full"
             placeholder="Enter point 1 title"
-            value={formData.point_one_title || ""}
+            value={formData.point_one_title || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -795,7 +803,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_one_description"
             className="w-full"
             placeholder="Enter point 1 description"
-            value={formData.point_one_description || ""}
+            value={formData.point_one_description || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -808,7 +816,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_two_title"
             className="w-full"
             placeholder="Enter point 2 title"
-            value={formData.point_two_title || ""}
+            value={formData.point_two_title || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -821,7 +829,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_two_description"
             className="w-full"
             placeholder="Enter point 2 description"
-            value={formData.point_two_description || ""}
+            value={formData.point_two_description || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -834,7 +842,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_three_title"
             className="w-full"
             placeholder="Enter point 3 title"
-            value={formData.point_three_title || ""}
+            value={formData.point_three_title || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -847,7 +855,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_three_description"
             className="w-full"
             placeholder="Enter point 3 description"
-            value={formData.point_three_description || ""}
+            value={formData.point_three_description || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -860,7 +868,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_four_title"
             className="w-full"
             placeholder="Enter point 4 title"
-            value={formData.point_four_title || ""}
+            value={formData.point_four_title || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -873,7 +881,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_four_description"
             className="w-full"
             placeholder="Enter point 4 description"
-            value={formData.point_four_description || ""}
+            value={formData.point_four_description || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -886,7 +894,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_five_title"
             className="w-full"
             placeholder="Enter point 5 title"
-            value={formData.point_five_title || ""}
+            value={formData.point_five_title || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -899,7 +907,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="point_five_description"
             className="w-full"
             placeholder="Enter point 5 description"
-            value={formData.point_five_description || ""}
+            value={formData.point_five_description || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -912,7 +920,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="meta_description"
             className="w-full"
             placeholder="Enter meta description"
-            value={formData.meta_description || ""}
+            value={formData.meta_description || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -925,7 +933,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="keywords"
             className="w-full"
             placeholder="Enter keywords (e.g., api, rest)"
-            value={formData.keywords || ""}
+            value={formData.keywords || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -938,7 +946,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="meta_author"
             className="w-full"
             placeholder="Enter meta author"
-            value={formData.meta_author || ""}
+            value={formData.meta_author || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -951,7 +959,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="meta_og_title"
             className="w-full"
             placeholder="Enter meta OG title"
-            value={formData.meta_og_title || ""}
+            value={formData.meta_og_title || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -964,7 +972,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="meta_og_url"
             className="w-full"
             placeholder="Enter meta OG URL"
-            value={formData.meta_og_url || ""}
+            value={formData.meta_og_url || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -977,7 +985,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="meta_site_name"
             className="w-full"
             placeholder="Enter meta site name"
-            value={formData.meta_site_name || ""}
+            value={formData.meta_site_name || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -990,7 +998,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="meta_post_twitter"
             className="w-full"
             placeholder="Enter meta post Twitter"
-            value={formData.meta_post_twitter || ""}
+            value={formData.meta_post_twitter || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -1003,7 +1011,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             name="more_blogs"
             className="w-full"
             placeholder="Enter more blogs"
-            value={formData.more_blogs || ""}
+            value={formData.more_blogs || ''}
             onChange={handleInputChange}
           />
         </div>
@@ -1028,7 +1036,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
               name="categories"
               className="w-full"
               placeholder="Enter new category (e.g., Technology, Programming)"
-              value={formData.categories || ""}
+              value={formData.categories || ''}
               onChange={handleInputChange}
               required
             />
@@ -1042,7 +1050,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
                 name="categories"
                 className="w-full"
                 placeholder="Enter new category (e.g., Technology, Programming)"
-                value={formData.categories || ""}
+                value={formData.categories || ''}
                 onChange={handleInputChange}
                 required
               />
@@ -1050,7 +1058,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           ) : (
             <Select
               onValueChange={handleCategoryChange}
-              value={formData.categories || ""}
+              value={formData.categories || ''}
               required
             >
               <SelectTrigger className="w-full">
@@ -1074,10 +1082,10 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
             onValueChange={(value) =>
               setFormData((prev) => ({
                 ...prev,
-                status: value as "visible" | "draft" | "archived",
+                status: value as 'visible' | 'draft' | 'archived',
               }))
             }
-            value={formData.status || "visible"}
+            value={formData.status || 'visible'}
             required
           >
             <SelectTrigger className="w-full">
@@ -1094,7 +1102,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         {/* Submit Button */}
         <div>
           <Button type="submit" disabled={submitStatus.loading} className="w-full">
-            {submitStatus.loading ? "Submitting..." : id ? "Update Blog" : "Create Blog"}
+            {submitStatus.loading ? 'Submitting...' : id ? 'Update Blog' : 'Create Blog'}
           </Button>
         </div>
 
@@ -1102,7 +1110,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         {submitStatus.error && <p className="text-red-500 text-sm">{submitStatus.error}</p>}
         {submitStatus.success && (
           <p className="text-green-500 text-sm">
-            {id ? "Blog updated" : "Blog created"} successfully!
+            {id ? 'Blog updated' : 'Blog created'} successfully!
           </p>
         )}
       </form>

@@ -1,174 +1,44 @@
-// import axios from "axios";
-// import { apiClient } from "@/context/axios";
-// import {  BlogResponseSM } from "@/lib/schemas/blogs/blog";
+import axios from 'axios';
+import { apiClient } from '@/context/axios';
+import { BlogPostSM, BlogResponseSM } from '@/lib/schemas/blogs/blog';
 
-
-// export const CreateBlog = async (data: BlogResponseSM) => {
-//   try {
-//     const response = await apiClient.post('/api/blogs/newblog', data);
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       const backendError = error.response?.data;
-
-//       const errorMessage =
-//         backendError?.message ||
-//         (typeof backendError === 'string' ? backendError : null) ||
-//         'Login failed';
-
-//       throw new Error(errorMessage);
-//     }
-
-//     throw new Error('An unexpected error occurred');
-//   }
-// };
-
-
-// export const CreateBlogImage = async (data: BlogResponseSM) => { 
-//   try {
-//     const response = await apiClient.post('/api/blogs/newblogimage', data);
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       const backendError = error.response?.data;
-
-//       const errorMessage =
-//         backendError?.message ||
-//         (typeof backendError === 'string' ? backendError : null) ||
-//         'Login failed';
-//         throw new Error(errorMessage);
-//     }
-//     throw new Error('An unexpected error occurred');
-//     }
-//   };
-  
-
-
-
-// export const GetBlogs = async () : Promise<BlogResponseSM>=> {
-//   try {
-//     const response = await apiClient.get('/api/blogs');
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       const backendError = error.response?.data;
-
-//       const errorMessage =
-//         backendError?.message ||
-//         (typeof backendError === 'string' ? backendError : null) ||
-//         'Login failed';
-
-//       throw new Error(errorMessage);
-//     }
-
-//     throw new Error('An unexpected error occurred');
-//   }
-// }
-
-
-
-// export const GetBlogById = async (id: string) : Promise<BlogResponseSM>=> {
-//   try {
-//     const response = await apiClient.get(`/api/blogs/${id}`);
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       const backendError = error.response?.data;
-
-//       const errorMessage =
-//         backendError?.message ||
-//         (typeof backendError === 'string' ? backendError : null) ||
-//         'Login failed';
-
-//       throw new Error(errorMessage);
-//     }
-
-//     throw new Error('An unexpected error occu)rred');
-//   }
-// }
-
-
-// export const UpdateBlog = async (id: string, data: BlogResponseSM) => {
-//   try {
-//     const response = await apiClient.put(`/api/blogs/${id}`, data);
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       const backendError = error.response?.data;
-
-//       const errorMessage =
-//         backendError?.message ||
-//         (typeof backendError === 'string' ? backendError : null) ||
-//         'Login failed';
-
-//       throw new Error(errorMessage);
-//     }
-
-//     throw new Error('An unexpected error occurred');
-//   }
-// };
-
-
-
-
-
-
-import axios from "axios";
-import { apiClient } from "@/context/axios";
-import { BlogResponseSM } from "@/lib/schemas/blogs/blog";
-
-export const CreateBlog = async (data: BlogResponseSM) => {
+export const CreateBlog = async (data: FormData): Promise<BlogPostSM> => {
   try {
-    const response = await apiClient.post("/api/blogs/newblog", data);
+    const response = await apiClient.post('/api/blogs/newblog', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const backendError = error.response?.data;
       const errorMessage =
         backendError?.message ||
-        (typeof backendError === "string" ? backendError : null) ||
-        "Login failed";
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Failed to create blog';
       throw new Error(errorMessage);
     }
-    throw new Error("An unexpected error occurred");
-  }
-};
-
-export const CreateBlogImage = async (data: BlogResponseSM) => {
-  try {
-    const response = await apiClient.post("/api/blogs/newblogimage", data);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const backendError = error.response?.data;
-      const errorMessage =
-        backendError?.message ||
-        (typeof backendError === "string" ? backendError : null) ||
-        "Login failed";
-      throw new Error(errorMessage);
-    }
-    throw new Error("An unexpected error occurred");
+    throw new Error('An unexpected error occurred');
   }
 };
 
 export const GetBlogs = async (): Promise<BlogResponseSM> => {
   try {
-    const response = await apiClient.get("/api/blogs");
+    const response = await apiClient.get('/api/blogs');
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const backendError = error.response?.data;
       const errorMessage =
         backendError?.message ||
-        (typeof backendError === "string" ? backendError : null) ||
-        "Login failed";
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Failed to fetch blogs';
       throw new Error(errorMessage);
     }
-    throw new Error("An unexpected error occurred");
+    throw new Error('An unexpected error occurred');
   }
 };
 
-export const GetBlogById = async (id: string): Promise<BlogResponseSM> => {
+export const GetBlogById = async (id: string): Promise<BlogPostSM> => {
   try {
     const response = await apiClient.get(`/api/blogs/${id}`);
     return response.data;
@@ -177,27 +47,29 @@ export const GetBlogById = async (id: string): Promise<BlogResponseSM> => {
       const backendError = error.response?.data;
       const errorMessage =
         backendError?.message ||
-        (typeof backendError === "string" ? backendError : null) ||
-        "Login failed";
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Failed to fetch blog';
       throw new Error(errorMessage);
     }
-    throw new Error("An unexpected error occurred");
+    throw new Error('An unexpected error occurred');
   }
 };
 
-export const UpdateBlog = async (id: string, data: BlogResponseSM) => {
+export const UpdateBlog = async (id: string, data: FormData): Promise<BlogPostSM> => {
   try {
-    const response = await apiClient.put(`/api/blogs/${id}`, data);
+    const response = await apiClient.put(`/api/blogs/${id}`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const backendError = error.response?.data;
       const errorMessage =
         backendError?.message ||
-        (typeof backendError === "string" ? backendError : null) ||
-        "Login failed";
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Failed to update blog';
       throw new Error(errorMessage);
     }
-    throw new Error("An unexpected error occurred");
+    throw new Error('An unexpected error occurred');
   }
 };

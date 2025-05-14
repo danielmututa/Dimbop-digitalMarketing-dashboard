@@ -20,22 +20,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { BlogResponseSM } from '@/lib/schemas/blogs/blog';
+import { BlogPostSM } from '@/lib/schemas/blogs/blog';
 import { apiClient } from '@/context/axios';
-import {
-  GetBlogs,
-  UpdateBlog,
-} from '@/api';
+import { GetBlogs, UpdateBlog } from '@/api';
 
 const BlogShowcase: React.FC = () => {
-  const [blogs, setBlogs] = useState<BlogResponseSM[]>([]);
+  const [blogs, setBlogs] = useState<BlogPostSM[]>([]);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; blogId: number | null }>({
     open: false,
     blogId: null,
   });
   const [editDialog, setEditDialog] = useState<{
     open: boolean;
-    blog: BlogResponseSM | null;
+    blog: BlogPostSM | null;
   }>({
     open: false,
     blog: null,
@@ -48,9 +45,8 @@ const BlogShowcase: React.FC = () => {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
   // Normalize image URL
-  const getImageUrl = (imageUrl: string) => {
+  const getImageUrl = (imageUrl: string | undefined): string => {
     if (!imageUrl) {
-      console.warn('No hero_image provided, using placeholder');
       return '/placeholder-image.jpg';
     }
     if (imageUrl.startsWith('http')) return imageUrl;
@@ -63,38 +59,9 @@ const BlogShowcase: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Attempting to fetch blogs from /api/blogs');
-        const data = await GetBlogs();
-        console.log('Raw API response:', JSON.stringify(data, null, 2));
-
-        // Validate and normalize the response
-        let blogArray: BlogResponseSM[];
-        if (Array.isArray(data)) {
-          blogArray = data;
-        } else if (data && typeof data === 'object' && 'data' in data && Array.isArray(data.data)) {
-          blogArray = data.data as BlogResponseSM[];
-        } else if (data && typeof data === 'object' && 'id' in data && 'title' in data) {
-          blogArray = [data as BlogResponseSM];
-        } else {
-          throw new Error('Unexpected API response format. Expected an array or object with "data" array or valid blog fields.');
-        }
-
-        // Log each blog to verify structure
-        blogArray.forEach((blog, index) => {
-          console.log(`Blog ${index + 1}:`, {
-            id: blog.id,
-            title: blog.title,
-            hero_image: blog.hero_image,
-            meta_author: blog.meta_author,
-            status: blog.status,
-          });
-          const fullUrl = getImageUrl(blog.hero_image || '');
-          console.log(`Blog ${index + 1} Hero Image URL: ${fullUrl}`);
-        });
-
-        setBlogs(blogArray);
+        const response = await GetBlogs();
+        setBlogs(response.data); // Extract the data array
       } catch (err: unknown) {
-        console.error('Detailed error fetching blogs:', err);
         const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
         setError(`Failed to load blogs: ${errorMessage}`);
         toast.error(`Failed to load blogs: ${errorMessage}`);
@@ -128,21 +95,11 @@ const BlogShowcase: React.FC = () => {
   // Handle blog deletion
   const handleDelete = async (blogId: number) => {
     try {
-      const deleteUrl = `${BASE_URL}/api/blogs/${blogId}`;
-      console.log(`Sending DELETE request to: ${deleteUrl}`);
-      const response = await apiClient.delete(deleteUrl);
-
-      console.log(`DELETE response status: ${response.status}, statusText: ${response.statusText}, data: ${JSON.stringify(response.data)}`);
-
-      if (response.status !== 200 && response.status !== 204) {
-        throw new Error(`Failed to delete blog: ${response.status} ${response.statusText}`);
-      }
-
+      await apiClient.delete(`/api/blogs/${blogId}`);
       setBlogs(blogs.filter((blog) => blog.id !== blogId));
       setDeleteDialog({ open: false, blogId: null });
       toast.success('Blog deleted successfully.');
     } catch (err: unknown) {
-      console.error('Detailed error deleting blog:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       toast.error(`Failed to delete blog: ${errorMessage}`);
     }
@@ -154,46 +111,37 @@ const BlogShowcase: React.FC = () => {
     if (!editDialog.blog) return;
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const title = formData.get('title') as string;
-      const status = formData.get('status') as string;
+      const form = new FormData(e.currentTarget);
+      const title = form.get('title') as string;
+      const status = form.get('status') as string;
 
       // Validation
       const missingFields: string[] = [];
-      if (!title.trim()) missingFields.push('title');
+      if (!title?.trim()) missingFields.push('title');
       if (!status) missingFields.push('status');
       if (missingFields.length > 0) {
         throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
       }
 
-      // Prepare FormData for update
-      const formDataToSend = new FormData();
-      formDataToSend.append('title', title);
-      formDataToSend.append('status', status);
+      // Prepare data for update
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('status', status);
       if (imageFile) {
-        formDataToSend.append('file', imageFile);
-        formDataToSend.append('hero_image', imageFile); // Updated field name
+        formData.append('hero_image', imageFile);
       }
 
-      console.log('Sending update data:', {
-        title,
-        status,
-        imageFile: imageFile?.name || 'none',
-      });
-      const response = await UpdateBlog(editDialog.blog.id.toString(), formDataToSend as unknown as BlogResponseSM);
+      const response = await UpdateBlog(editDialog.blog.id.toString(), formData);
 
-      console.log('Received updated blog:', response);
+      if (!response.title) {
+        throw new Error('Invalid response from server: missing title');
+      }
 
-      setBlogs(
-        blogs.map((blog) =>
-          blog.id === response.id ? response : blog
-        )
-      );
+      setBlogs(blogs.map((blog) => (blog.id === response.id ? response : blog)));
       setEditDialog({ open: false, blog: null });
       setImageFile(null);
       toast.success('Blog updated successfully.');
     } catch (err: unknown) {
-      console.error('Detailed error updating blog:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       toast.error(`Failed to update blog: ${errorMessage}`);
     }
@@ -234,11 +182,10 @@ const BlogShowcase: React.FC = () => {
               <TableRow key={blog.id}>
                 <TableCell>
                   <img
-                    src={getImageUrl(blog.hero_image || '')}
+                    src={getImageUrl(blog.hero_image)}
                     alt={blog.title || 'Blog Hero Image'}
                     className="w-16 h-16 object-cover rounded"
                     onError={(e) => {
-                      console.error(`Failed to load hero image: ${blog.hero_image}, Full URL: ${getImageUrl(blog.hero_image || '')}`);
                       e.currentTarget.src = '/placeholder-image.jpg';
                     }}
                   />
@@ -313,7 +260,7 @@ const BlogShowcase: React.FC = () => {
                               </label>
                               <Input
                                 id="hero_image"
-                                name="file"
+                                name="hero_image"
                                 type="file"
                                 accept="image/*"
                                 className="col-span-3"
@@ -352,7 +299,8 @@ const BlogShowcase: React.FC = () => {
                         <DialogHeader>
                           <DialogTitle>Delete Blog</DialogTitle>
                           <DialogDescription>
-                            Are you sure you want to delete "{blog.title || 'Untitled'}"? This action cannot be undone.
+                            Are you sure you want to delete "{blog.title || 'Untitled'}"? This
+                            action cannot be undone.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="flex justify-end space-x-2">
@@ -362,10 +310,7 @@ const BlogShowcase: React.FC = () => {
                           >
                             Cancel
                           </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() => handleDelete(blog.id)}
-                          >
+                          <Button variant="destructive" onClick={() => handleDelete(blog.id)}>
                             Delete
                           </Button>
                         </div>
