@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Home  } from "lucide-react";
 import Navbar from "@/pages/Navbar";
 import {
   SidebarProvider,
@@ -21,6 +21,11 @@ import { MdOutlineViewComfy } from "react-icons/md";
 import { VscFeedback } from "react-icons/vsc";
 import { AiOutlineProduct } from "react-icons/ai";
 import { FaRegNewspaper } from "react-icons/fa6";
+import { useAuthStore } from "@/context/userContext";
+
+
+
+
 
 const items = [
   { title: "Home", path: "/", icon: Home },
@@ -40,6 +45,8 @@ type MainSidebarProps = {
 };
 
 const MainSidebar = ({ children }: MainSidebarProps) => {
+  const { user } = useAuthStore();
+
   return (
     <SidebarProvider className="flex flex-col h-screen">
       <div className="flex min-h-screen">
@@ -82,7 +89,7 @@ const MainSidebar = ({ children }: MainSidebarProps) => {
 
          
           <div className="flex items-start flex-col pt-4 lg:pt-8  ">
-            <p className='text-lg lg:text-2xl xl:text-3xl '>Welcome, Daniel!</p>
+            <p className='text-lg lg:text-2xl xl:text-3xl '>Welcome,{user?.username}!</p>
             <div className="border w-full"></div>
             {children}
           </div>
