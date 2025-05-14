@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 // Temporary useFetch hook (replace with actual import once fixed)
 const useFetch = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchData = async (apiCall: () => Promise<any>) => {
     setLoading(true);
@@ -33,8 +33,9 @@ const useFetch = () => {
       const response = await apiCall();
       setLoading(false);
       return response;
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error('Unknown error');
+      setError(error);
       setLoading(false);
       throw err;
     }
@@ -45,7 +46,7 @@ const useFetch = () => {
 
 const Account = () => {
   const { user, logout } = useAuthStore();
-  const { fetchData, loading, error } = useFetch();
+  const { fetchData, loading } = useFetch();
   const navigate = useNavigate();
 
   // Debug: Log user object to confirm structure
@@ -75,9 +76,10 @@ const Account = () => {
       await fetchData(() => ChangePasswordApi(changePasswordData));
       toast.success("Password changed successfully");
       setChangePasswordData({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Change password error:", err);
-      toast.error(err.message || error?.message || "Failed to change password");
+      const errorMessage = err instanceof Error ? err.message : "Failed to change password";
+      toast.error(errorMessage);
     }
   };
 
@@ -88,9 +90,10 @@ const Account = () => {
       logout(); // Clear auth state
       toast.success("Logged out successfully");
       navigate("/login");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Logout error:", err);
-      toast.error(err.message || error?.message || "Failed to logout");
+      const errorMessage = err instanceof Error ? err.message : "Failed to logout";
+      toast.error(errorMessage);
     }
   };
 

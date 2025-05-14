@@ -24,7 +24,7 @@ const AnalyticsDashboard = () => {
       <div className="w-full ">
         <DevicePieChart stats={deviceStats} />
       </div>
-      <div className="w-full ">
+      <div className="hidden md:block w-full ">
         <BrowserStatsChart stats={browserStats} />
       </div>
     </div>

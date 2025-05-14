@@ -47,7 +47,7 @@ const BrowserStatsChart = ({ stats }: { stats: BrowserStat[] }) => {
   };
 
   return (
-    <div className="bg-white p-4 mt-4 rounded-xl shadow-sm ">
+    <div className=" bg-white p-4 mt-4 rounded-xl shadow-sm ">
       <h2 className="text-lg font-semibold mb-4">Browser Usage</h2>
       <Bar data={data} options={options} />
     </div>

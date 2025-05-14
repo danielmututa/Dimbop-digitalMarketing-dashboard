@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import useFetch from '@/hooks/useFetch';
+import { apiClient } from '@/context/axios';
 import {
   Table,
   TableBody,
@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
+// Define Product interface
 interface Product {
   id: number;
   name: string;
@@ -33,11 +34,42 @@ interface Product {
   cart: { id: number; product_id: number; quantity: number }[];
 }
 
-// Define type for useFetch return value
+// Define FetchResult interface
 interface FetchResult<T> {
   data: T | null;
   loading: boolean;
   error: Error | null;
+}
+
+// Custom useFetch hook
+function useFetch<T>(
+  url: string,
+  options: { method?: string; headers?: Record<string, string> } = {}
+): FetchResult<T> {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiClient({
+          url,
+          method: options.method || 'GET',
+          headers: options.headers || { 'Content-Type': 'application/json' },
+        });
+        setData(response.data);
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error('Unknown error');
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [url, options.method, options.headers]);
+
+  return { data, loading, error };
 }
 
 const ProductShowcase: React.FC = () => {
@@ -68,11 +100,11 @@ const ProductShowcase: React.FC = () => {
     return `${BASE_URL}${imageUrl}`;
   };
 
-  // Fetch all products using useFetch with typed return
+  // Fetch all products using useFetch
   const { data, loading, error } = useFetch<Product[]>('/api/products', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
-  }) as FetchResult<Product[]>;
+  });
 
   useEffect(() => {
     if (data) {
@@ -117,23 +149,9 @@ const ProductShowcase: React.FC = () => {
   // Handle product deletion
   const handleDelete = async (productId: number) => {
     try {
-      const deleteUrl = `${BASE_URL}/api/products/${productId}`;
+      const deleteUrl = `/api/products/${productId}`;
       console.log(`Sending DELETE request to: ${deleteUrl}`);
-      const response = await fetch(deleteUrl, {
-        method: 'DELETE',
-      });
-
-      console.log(`DELETE response status: ${response.status}, statusText: ${response.statusText}`);
-
-      if (!response.ok) {
-        let errorText = 'No error message provided';
-        try {
-          errorText = await response.text();
-        } catch (textError) {
-          console.warn('Could not parse error response:', textError);
-        }
-        throw new Error(`Failed to delete product: ${response.status} ${response.statusText} - ${errorText}`);
-      }
+      await apiClient.delete(deleteUrl);
 
       setProducts(products.filter((product) => product.id !== productId));
       setDeleteDialog({ open: false, productId: null });
@@ -194,7 +212,7 @@ const ProductShowcase: React.FC = () => {
         formDataToSend.append('image', imageFile); // Fallback field
       }
 
-      const updateUrl = `${BASE_URL}/api/products/${editDialog.product.id}`;
+      const updateUrl = `/api/products/${editDialog.product.id}`;
       console.log('Sending update data (FormData) to:', updateUrl);
       console.log('FormData fields:', {
         name,
@@ -208,14 +226,11 @@ const ProductShowcase: React.FC = () => {
         image: imageFile?.name || 'none',
       });
 
-      let response = await fetch(updateUrl, {
-        method: 'PUT',
-        body: formDataToSend,
-      });
+      let response = await apiClient.put(updateUrl, formDataToSend);
 
       // Fallback to JSON if FormData fails
-      if (!response.ok) {
-        console.warn('FormData update failed, trying JSON:', await response.text());
+      if (response.status >= 400) {
+        console.warn('FormData update failed, trying JSON:', response.data);
         const updatedProduct = {
           name,
           price: priceStr,
@@ -230,24 +245,10 @@ const ProductShowcase: React.FC = () => {
         console.log('Sending update data (JSON) to:', updateUrl);
         console.log('JSON payload:', updatedProduct);
 
-        response = await fetch(updateUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedProduct),
-        });
+        response = await apiClient.put(updateUrl, updatedProduct);
       }
 
-      if (!response.ok) {
-        let errorText = 'No error message provided';
-        try {
-          errorText = await response.text();
-        } catch (textError) {
-          console.warn('Could not parse error response:', textError);
-        }
-        throw new Error(`Failed to update product: ${response.status} ${response.statusText} - ${errorText}`);
-      }
-
-      const updatedProductData = await response.json();
+      const updatedProductData = response.data;
       console.log('Received updated product:', updatedProductData);
 
       setProducts(
@@ -449,7 +450,7 @@ const ProductShowcase: React.FC = () => {
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Delete Product</DialogTitle>
+                          <DialogTitle>Delete Product</ DialogTitle>
                           <DialogDescription>
                             Are you sure you want to delete "{product.name}"? This action cannot be undone.
                           </DialogDescription>

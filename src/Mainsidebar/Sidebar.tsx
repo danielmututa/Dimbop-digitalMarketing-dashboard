@@ -75,7 +75,7 @@ const MainSidebar = ({ children }: MainSidebarProps) => {
         </Sidebar>
 
         {/* Main Content */}
-        <main className="flex flex-start mt-10 md:px-8 lg:px-10  flex-col w-full">
+        <main className="flex flex-start mt-5 px-5 md:mt-10 md:px-8 lg:px-10  flex-col w-full">
           <div className="flex justify-between w-full">
             <SidebarTrigger>
               <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
