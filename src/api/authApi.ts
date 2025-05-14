@@ -46,6 +46,67 @@ export const RegisterApi = async (data: RegisterInput): Promise<AuthRegisterResp
   }
 };
 
+export const ChangePasswordApi = async (data: {currentPassword: string; newPassword: string; confirmNewPassword: string;
+}) => {
+  try {
+    const response = await apiClient.post('/api/auth/change-password', data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendError = error.response?.data;
+
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Password change failed';
+
+      throw new Error(errorMessage);
+    }
+    throw new Error('An unexpected error occurred');
+  }
+};
+
+
+export const ResetPasswordApi = async (data: {token: string; newPassword: string; confirmNewPassword: string;
+}) => {
+  try {
+    const response = await apiClient.post('/api/auth/reset-password', data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendError = error.response?.data;
+
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Password reset failed';
+
+      throw new Error(errorMessage);
+    }
+    throw new Error('An unexpected error occurred');
+  }
+};
+
+
+export const ForgetPasswordApi = async (data: {email: string}) => {
+  try {
+    const response = await apiClient.post('/api/auth/forgot-password', data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendError = error.response?.data;
+
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Password reset failed';
+
+      throw new Error(errorMessage);
+    }
+    throw new Error('An unexpected error occurred');
+  }
+};
+
 
 export const DeleteApi = async (userId: string) => {
   try {

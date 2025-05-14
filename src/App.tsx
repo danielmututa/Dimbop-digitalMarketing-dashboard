@@ -76,14 +76,16 @@ import { AuthRoute } from '@/Auth/AuthRoute/AuthRoute';
 
 // Lazy loaded pages
 const HomePage = lazy(() => import('./pages/Home'));
-const CategoriesPage = lazy(() => import('./pages/Categories'));
+// const CategoriesPage = lazy(() => import('./pages/Categories'));
 const FeedbackPage = lazy(() => import('./pages/Feedback'));
 const OrdersPage = lazy(() => import('./pages/Orders'));
 const ProductsPage = lazy(() => import('./pages/Products'));
 const UsersPage = lazy(() => import('./pages/Users'));
 const BlogPage = lazy(() => import('./pages/Blogs'));
 const LoginPage = lazy(() => import('./Auth/Login'));
-const RegisterPage = lazy(() => import('./pages/ProductShowcase'));
+const RegisterPage = lazy(() => import('./Auth/Register'));
+const ProductShowcases = lazy(() => import('./pages/ProductShowcase'));
+const BlogShowcases = lazy(() => import('./pages/BlogShowcase'));
 
 function App() {
   const { initializeAuth } = useAuthStore();
@@ -98,19 +100,20 @@ function App() {
         {/* Auth routes */}
         <Route element={<AuthRoute />}>
           <Route path="/login" element={<LoginPage />} />
-          
+          <Route path ="register" element={<RegisterPage />} />
         </Route>
 
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
+          {/* <Route path="/categories" element={<CategoriesPage />} /> */}
           <Route path="/feedback" element={<FeedbackPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/blogs" element={<BlogPage />} />
-          <Route path="/prodt" element={<RegisterPage />} />
+          <Route path="/prodt" element={<ProductShowcases />} />
+          <Route path="/blogshowcase" element={<BlogShowcases/>} />
         </Route>
       </Routes>
     </Suspense>
