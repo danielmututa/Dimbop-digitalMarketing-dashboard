@@ -25,6 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Loader } from "lucide-react";
 
 
 
@@ -34,7 +35,7 @@ interface UserTableProps {
 
 const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
 
-  const { data: apiResponse, loading, error, refetch } = useFetch<{ success: boolean; data: User[] }>('/api/auth/users');
+  const { data: apiResponse, isLoading, error, refetch } = useFetch<{ success: boolean; data: User[] }>('/api/auth/users');
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [userToDelete, setUserToDelete] = React.useState<number | null>(null);
@@ -57,7 +58,7 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
   };
 
 
-  if (loading) return <div className="text-center py-8">Loading users...</div>;
+  if (isLoading) return <div className="flex h-screen w-full items-center justify-center "> <Loader/> </div>;
   if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
   if (!users || users.length === 0) return <div className="text-center py-8">No users found</div>;
 
@@ -77,7 +78,8 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.email} className="hover:bg-gray-50">
+            <tr key={user.id} className="hover:bg-gray-50">
+              
               <td className="py-3 text-start px-4 border-b border-gray-200">{user.username}</td>
               <td className="py-3 text-start px-4 border-b border-gray-200">{user.email}</td>
               <td className="py-3 text-start px-4 border-b border-gray-200 capitalize">{user.role}</td>
