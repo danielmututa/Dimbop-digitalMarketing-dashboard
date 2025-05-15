@@ -4,10 +4,7 @@ import Dashboard from "@/ChartGraphs/Two"
 const Home = () => {
   return (
     <div className=" flex flex-col">
-    <div className="flex flex-col lg:flex-row lg:gap-5 pt-5 justify-between items-start">
-      
-   
-        
+    <div className="flex flex-col xl:flex-row lg:gap-5 pt-5 justify-between items-start">
       <Dashboard/>
     
 

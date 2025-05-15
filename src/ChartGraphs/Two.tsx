@@ -2,7 +2,7 @@ import DashboardCard from "./One";
 
 const Dashboard = () => {
   return (
-    <div className="flex w-full lg:w-1/2  md:h-full justify-between flex-wrap  ">
+    <div className="flex w-full xl:w-1/2  md:h-full justify-between flex-wrap  ">
       <DashboardCard
         title="Total orders"
         value="12,832"

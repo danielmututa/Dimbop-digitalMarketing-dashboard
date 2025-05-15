@@ -20,7 +20,7 @@ const AnalyticsDashboard = () => {
 
   return (
     
-    <div className="flex  w-full  gap-4 p-4  min-h-screen">
+    <div className="flex   w-full  gap-4 p-4 md:flex-col md:p-0 md:mt-3 xl:flex-row  min-h-screen">
       <div className="w-full ">
         <DevicePieChart stats={deviceStats} />
       </div>
