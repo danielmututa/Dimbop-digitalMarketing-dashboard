@@ -10,17 +10,10 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CreateBlog, GetBlogById, UpdateBlog } from '@/api';
-import { BlogPostSM } from '@/lib/schemas/blogs/blog';
-import { apiClient } from '@/context/axios';
-import axios from 'axios';
+import { BlogPostSM } from '@/components/interfaces/blog';
 
 interface BlogsProps {
   onBlogAction?: () => void;
-}
-
-interface Category {
-  id: number;
-  name: string;
 }
 
 interface BlogImage {
@@ -92,7 +85,6 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
   });
   const [imageFiles, setImageFiles] = useState<ImageFiles>({ blog_images: [] });
   const [imagePreview, setImagePreview] = useState<Record<string, string>>({});
-  const [useNewCategory, setUseNewCategory] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     loading: boolean;
     error: string | null;
@@ -102,32 +94,9 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     error: null,
     success: false,
   });
-  const [categories, setCategories] = useState<Category[]>([]);
 
-  // Fetch categories
+  // Fetch blog data for editing
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await apiClient.get('/api/categories');
-        const fetchedCategories: Category[] = response.data.map(
-          (cat: { id: number; name: string }) => ({
-            id: cat.id,
-            name: cat.name,
-          })
-        );
-        setCategories(fetchedCategories);
-      } catch (error) {
-        setCategories([]);
-        setSubmitStatus({
-          loading: false,
-          error: 'Failed to load categories. Please try again.',
-          success: false,
-        });
-      }
-    };
-
-    fetchCategories();
-
     if (id) {
       const fetchBlog = async () => {
         try {
@@ -140,7 +109,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         } catch (error) {
           setSubmitStatus({
             loading: false,
-            error: 'Failed to load blog.',
+            error: 'Failed to load blog. Please try again.',
             success: false,
           });
         }
@@ -194,36 +163,6 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     }
   };
 
-  const handleCategoryChange = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      categories: value,
-    }));
-  };
-
-  const toggleCategoryInput = () => {
-    setUseNewCategory((prev) => !prev);
-    setFormData((prev) => ({
-      ...prev,
-      categories: '',
-    }));
-  };
-
-  const createNewCategory = async (categoryName: string): Promise<string> => {
-    try {
-      const response = await apiClient.post('/api/categories', { name: categoryName });
-      const newCategory: Category = response.data;
-      setCategories((prev) => [...prev, newCategory]);
-      return newCategory.name;
-    } catch (error) {
-      throw new Error(
-        axios.isAxiosError(error)
-          ? error.response?.data?.message || 'Failed to create category'
-          : 'An unexpected error occurred'
-      );
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ loading: true, error: null, success: false });
@@ -244,12 +183,6 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
 
     try {
       const formDataToSend = new FormData();
-      let finalCategory = formData.categories || '';
-
-      // Create new category if useNewCategory is checked
-      if (useNewCategory && finalCategory) {
-        finalCategory = await createNewCategory(finalCategory);
-      }
 
       // Append text fields (exclude backend-generated fields)
       Object.entries(formData).forEach(([key, value]) => {
@@ -263,11 +196,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
           value &&
           value.toString().trim()
         ) {
-          if (key === 'categories') {
-            formDataToSend.append(key, finalCategory);
-          } else {
-            formDataToSend.append(key, value.toString());
-          }
+          formDataToSend.append(key, value.toString());
         }
       });
 
@@ -283,12 +212,22 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         formDataToSend.append(`blog_images[${index}]`, file);
       });
 
+      // Debugging: Log FormData contents
+      console.log('FormData contents:');
+      for (const [key, value] of formDataToSend.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
       const response = id
         ? await UpdateBlog(id, formDataToSend)
         : await CreateBlog(formDataToSend);
 
-      if (!response.title) {
-        throw new Error('Invalid response from server: missing title');
+      // Debugging: Log the API response
+      console.log('API Response:', response);
+
+      // Relaxed validation: Check if response exists and seems valid
+      if (!response || typeof response !== 'object') {
+        throw new Error('Invalid response from server: empty or malformed response');
       }
 
       setSubmitStatus({ loading: false, error: null, success: true });
@@ -340,7 +279,6 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
       });
       setImageFiles({ blog_images: [] });
       setImagePreview({});
-      setUseNewCategory(false);
 
       if (onBlogAction) onBlogAction();
       navigate('/');
@@ -355,8 +293,8 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
   };
 
   return (
-    <div className="w-full p-10">
-      <h2 className="text-lg font-medium mb-4">{id ? 'Edit Blog' : 'Create New Blog'}</h2>
+    <div className="w-full py-5 md:p-5 lg:p-10">
+      <h2 className="text-lg lg:text-2xl font-medium mb-4">{id ? 'Edit Blog' : 'Create New Blog'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         {/* Image Uploads with Previews */}
         <div>
@@ -1017,62 +955,17 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="categories" className="block text-sm font-medium">
-            Categories *
+            Category *
           </label>
-          <div className="flex items-center space-x-2 mb-2">
-            <input
-              type="checkbox"
-              id="use_new_category"
-              checked={useNewCategory}
-              onChange={toggleCategoryInput}
-            />
-            <label htmlFor="use_new_category" className="text-sm">
-              Create new category
-            </label>
-          </div>
-          {useNewCategory ? (
-            <Input
-              id="categories"
-              name="categories"
-              className="w-full"
-              placeholder="Enter new category (e.g., Technology, Programming)"
-              value={formData.categories || ''}
-              onChange={handleInputChange}
-              required
-            />
-          ) : categories.length === 0 ? (
-            <>
-              <p className="text-red-500 text-sm mb-2">
-                No categories available. Please enter a new category.
-              </p>
-              <Input
-                id="categories"
-                name="categories"
-                className="w-full"
-                placeholder="Enter new category (e.g., Technology, Programming)"
-                value={formData.categories || ''}
-                onChange={handleInputChange}
-                required
-              />
-            </>
-          ) : (
-            <Select
-              onValueChange={handleCategoryChange}
-              value={formData.categories || ''}
-              required
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.name}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          <Input
+            id="categories"
+            name="categories"
+            className="w-full"
+            placeholder="Enter category (e.g., Technology, Programming)"
+            value={formData.categories || ''}
+            onChange={handleInputChange}
+            required
+          />
         </div>
         <div>
           <label htmlFor="status" className="block text-sm font-medium">
@@ -1119,3 +1012,8 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
 };
 
 export default Blogs;
+
+
+
+
+

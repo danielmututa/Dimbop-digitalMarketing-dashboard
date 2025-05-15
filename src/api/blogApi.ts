@@ -73,3 +73,21 @@ export const UpdateBlog = async (id: string, data: FormData): Promise<BlogPostSM
     throw new Error('An unexpected error occurred');
   }
 };
+
+
+
+export const DeleteBlog = async (id: string): Promise<void> => {
+  try {
+    await apiClient.delete(`/api/blogs/${id}`);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const backendError = error.response?.data;
+      const errorMessage =
+        backendError?.message ||
+        (typeof backendError === 'string' ? backendError : null) ||
+        'Failed to delete blog';
+      throw new Error(errorMessage);
+    }
+    throw new Error('An unexpected error occurred');
+  }
+};
