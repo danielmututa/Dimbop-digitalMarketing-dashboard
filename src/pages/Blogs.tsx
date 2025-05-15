@@ -293,7 +293,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
   };
 
   return (
-    <div className="w-full py-5 md:p-5 lg:p-10">
+    <div className="w-full py-5 lg:py-10">
       <h2 className="text-lg lg:text-2xl font-medium mb-4">{id ? 'Edit Blog' : 'Create New Blog'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         {/* Image Uploads with Previews */}

@@ -148,7 +148,7 @@ const BlogShowcase: React.FC = () => {
   };
 
   return (
-    <div className="w-full  py-5 mdp:p-5 lg:p-10">
+    <div className="w-full  py-5  lg:py-10">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg lg:text-2xl font-semibold">Blog Showcase</h2>
         <Link to="/blogs">

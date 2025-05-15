@@ -58,7 +58,7 @@ const Users: React.FC<UserTableProps> = ({ onUserAction }) => {
   if (!users || users.length === 0) return <div className="text-center py-8">No users found</div>;
 
   return (
-    <div className="w-full py-5 md:p-5 lg:p-10">
+    <div className="w-full py-5  lg:py-10">
       <h2 className="text-lg lg:text-2xl font-semibold mb-6">Users</h2>
       <div className="overflow-x-auto">
         <table className="min-w-[800px] w-full bg-white border border-gray-200">

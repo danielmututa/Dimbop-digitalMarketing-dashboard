@@ -383,7 +383,7 @@ const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
   return (
-    <div className="w-full py-5 md:p-5 lg:p-10">
+    <div className="w-full py-5  lg:py-10">
       <div className="flex justify-between items-center mb-6">
         <h2 className=" text-lg lg:text-2xl  font-semibold">Product Showcase</h2>
         <Link to="/products">

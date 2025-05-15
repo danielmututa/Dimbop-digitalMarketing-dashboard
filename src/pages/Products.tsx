@@ -248,8 +248,8 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
   };
 
   return (
-    <div className="w-full p-10">
-      <h2 className="text-lg font-medium mb-4">{id ? "Edit Product" : "Create New Product/Category"}</h2>
+    <div className="w-full py-5  lg:py-10">
+      <h2 className="text-lg lg:text-2xl font-medium mb-4">{id ? "Edit Product" : "Create New Product/Category"}</h2>
       <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         <div>
           <label htmlFor="image" className="block text-sm font-medium">
