@@ -22,6 +22,7 @@ import { VscFeedback } from "react-icons/vsc";
 import { AiOutlineProduct } from "react-icons/ai";
 import { FaRegNewspaper } from "react-icons/fa6";
 import { useAuthStore } from "@/context/userContext";
+import { Button } from '@/components/ui/button';
 
 
 
@@ -54,7 +55,7 @@ const MainSidebar = ({ children }: MainSidebarProps) => {
         <Sidebar>
           <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel className='pt-10'> 
+              <SidebarGroupLabel className='pt-5 md:pt-10'> 
                 <p className='text-2xl'>Dimbo P</p></SidebarGroupLabel>
               <SidebarGroupContent className="pt-10 flex gap-2">
                 <SidebarMenu className="flex gap-2">
@@ -88,8 +89,11 @@ const MainSidebar = ({ children }: MainSidebarProps) => {
           </div>
 
          
-          <div className="flex items-start flex-col pt-4 lg:pt-8  ">
-            <p className='text-lg lg:text-2xl xl:text-3xl '>Welcome,{user?.username}!</p>
+          <div className="flex items-start flex-col pt-4 lg:pt-8   ">
+          <div className="flex justify-between items-center w-full pb-2 md:pb-4 ">
+            <p className='text-sm md:text-lg lg:text-2xl xl:text-3xl '>Welcome,{user?.username}!</p>
+            <Button className="text-[12px] md:text-sm" variant="outline">Generate Report</Button>
+            </div>
             <div className="border w-full"></div>
             {children}
           </div>

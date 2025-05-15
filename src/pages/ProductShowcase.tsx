@@ -164,114 +164,233 @@ const ProductShowcase: React.FC = () => {
   };
 
   // Handle product update
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!editDialog.product) return;
+  // const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   if (!editDialog.product) return;
 
-    try {
-      const formData = new FormData(e.currentTarget);
-      const name = formData.get('name') as string;
-      const priceStr = formData.get('price') as string;
-      const stockStr = formData.get('stock_quantity') as string;
-      const discountStr = formData.get('discount_percentage') as string;
+  //   try {
+  //     const formData = new FormData(e.currentTarget);
+  //     const name = formData.get('name') as string;
+  //     const priceStr = formData.get('price') as string;
+  //     const stockStr = formData.get('stock_quantity') as string;
+  //     const discountStr = formData.get('discount_percentage') as string;
 
-      // Validation
-      const missingFields: string[] = [];
-      if (!name.trim()) missingFields.push('name');
-      if (!priceStr) missingFields.push('price');
-      if (!stockStr) missingFields.push('stock quantity');
-      if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
-      }
+  //     // Validation
+  //     const missingFields: string[] = [];
+  //     if (!name.trim()) missingFields.push('name');
+  //     if (!priceStr) missingFields.push('price');
+  //     if (!stockStr) missingFields.push('stock quantity');
+  //     if (missingFields.length > 0) {
+  //       throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  //     }
 
-      const price = parseFloat(priceStr);
-      const stock_quantity = parseInt(stockStr, 10);
-      const discount_percentage = discountStr ? parseInt(discountStr, 10) : 0;
+  //     const price = parseFloat(priceStr);
+  //     const stock_quantity = parseInt(stockStr, 10);
+  //     const discount_percentage = discountStr ? parseInt(discountStr, 10) : 0;
 
-      if (isNaN(price) || price <= 0) {
-        throw new Error('Price must be a positive number');
-      }
-      if (isNaN(stock_quantity) || stock_quantity < 0) {
-        throw new Error('Stock quantity must be a non-negative integer');
-      }
-      if (discount_percentage < 0) {
-        throw new Error('Discount percentage cannot be negative');
-      }
+  //     if (isNaN(price) || price <= 0) {
+  //       throw new Error('Price must be a positive number');
+  //     }
+  //     if (isNaN(stock_quantity) || stock_quantity < 0) {
+  //       throw new Error('Stock quantity must be a non-negative integer');
+  //     }
+  //     if (discount_percentage < 0) {
+  //       throw new Error('Discount percentage cannot be negative');
+  //     }
 
-      // Prepare FormData for update
+  //     // Prepare FormData for update
+  //     const formDataToSend = new FormData();
+  //     formDataToSend.append('name', name);
+  //     formDataToSend.append('price', priceStr);
+  //     formDataToSend.append('stock_quantity', stockStr);
+  //     formDataToSend.append('discount_percentage', discountStr || '0');
+  //     formDataToSend.append('description', '');
+  //     formDataToSend.append('category_name', editDialog.product.categories?.name || 'General');
+  //     formDataToSend.append('category_id', editDialog.product.categories?.id.toString() || '');
+  //     if (imageFile) {
+  //       formDataToSend.append('file', imageFile);
+  //       formDataToSend.append('image', imageFile); // Fallback field
+  //     }
+
+  //     const updateUrl = `/api/products/${editDialog.product.id}`;
+  //     console.log('Sending update data (FormData) to:', updateUrl);
+  //     console.log('FormData fields:', {
+  //       name,
+  //       price: priceStr,
+  //       stock_quantity: stockStr,
+  //       discount_percentage: discountStr || '0',
+  //       description: '',
+  //       category_name: editDialog.product.categories?.name || 'General',
+  //       category_id: editDialog.product.categories?.id || '',
+  //       file: imageFile?.name || 'none',
+  //       image: imageFile?.name || 'none',
+  //     });
+
+  //     let response = await apiClient.put(updateUrl, formDataToSend);
+
+  //     // Fallback to JSON if FormData fails
+  //     if (response.status >= 400) {
+       
+  //       const updatedProduct = {
+  //         name,
+  //         price: priceStr,
+  //         stock_quantity,
+  //         discount_percentage,
+  //         image_url: editDialog.product.image_url, // Retain existing image_url
+  //         description: '',
+  //         category_name: editDialog.product.categories?.name || 'General',
+  //         category_id: editDialog.product.categories?.id || null,
+  //       };
+
+        
+      
+
+  //       response = await apiClient.put(updateUrl, updatedProduct);
+  //     }
+
+  //     const updatedProductData = response.data;
+     
+
+  //     setProducts(
+  //       products.map((product) =>
+  //         product.id === updatedProductData.id ? updatedProductData : product
+  //       )
+  //     );
+  //     setEditDialog({ open: false, product: null });
+  //     setImageFile(null);
+  //     toast.success('Product updated successfully.');
+  //   } catch (err: unknown) {
+  //     console.error('Error updating product:', err);
+  //     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+  //     toast.error(`Failed to update product: ${errorMessage}`);
+  //   }
+  // };
+
+
+const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (!editDialog.product) return;
+
+  try {
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const priceStr = formData.get('price') as string;
+    const stockStr = formData.get('stock_quantity') as string;
+    const discountStr = formData.get('discount_percentage') as string;
+
+    // Validation
+    const missingFields: string[] = [];
+    if (!name.trim()) missingFields.push('name');
+    if (!priceStr) missingFields.push('price');
+    if (!stockStr) missingFields.push('stock quantity');
+    if (missingFields.length > 0) {
+      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+
+    const price = parseFloat(priceStr);
+    const stock_quantity = parseInt(stockStr, 10);
+    const discount_percentage = discountStr ? parseInt(discountStr, 10) : 0;
+
+    if (isNaN(price) || price <= 0) {
+      throw new Error('Price must be a positive number');
+    }
+    if (isNaN(stock_quantity) || stock_quantity < 0) {
+      throw new Error('Stock quantity must be a non-negative integer');
+    }
+    if (discount_percentage < 0) {
+      throw new Error('Discount percentage cannot be negative');
+    }
+
+    // Prepare payload
+    const payload = {
+      name,
+      price: priceStr,
+      stock_quantity,
+      discount_percentage,
+      description: '',
+      category_id: editDialog.product.categories?.id || null,
+    };
+
+    let response;
+    const updateUrl = `/api/products/${editDialog.product.id}`;
+
+    if (imageFile) {
+      // Send FormData for image upload
       const formDataToSend = new FormData();
       formDataToSend.append('name', name);
       formDataToSend.append('price', priceStr);
       formDataToSend.append('stock_quantity', stockStr);
       formDataToSend.append('discount_percentage', discountStr || '0');
       formDataToSend.append('description', '');
-      formDataToSend.append('category_name', editDialog.product.categories?.name || 'General');
-      formDataToSend.append('category_id', editDialog.product.categories?.id.toString() || '');
-      if (imageFile) {
-        formDataToSend.append('file', imageFile);
-        formDataToSend.append('image', imageFile); // Fallback field
+      if (editDialog.product.categories?.id) {
+        formDataToSend.append('category_id', editDialog.product.categories.id.toString());
       }
+      formDataToSend.append('image', imageFile);
 
-      const updateUrl = `/api/products/${editDialog.product.id}`;
-      console.log('Sending update data (FormData) to:', updateUrl);
+      console.log('Sending FormData to:', updateUrl);
       console.log('FormData fields:', {
         name,
         price: priceStr,
         stock_quantity: stockStr,
         discount_percentage: discountStr || '0',
         description: '',
-        category_name: editDialog.product.categories?.name || 'General',
-        category_id: editDialog.product.categories?.id || '',
-        file: imageFile?.name || 'none',
-        image: imageFile?.name || 'none',
+        category_id: editDialog.product.categories?.id || 'none',
+        image: imageFile.name,
       });
 
-      let response = await apiClient.put(updateUrl, formDataToSend);
+      response = await apiClient.put(updateUrl, formDataToSend, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    } else {
+      // Send JSON payload
+      console.log('Sending JSON to:', updateUrl);
+      console.log('JSON payload:', payload);
 
-      // Fallback to JSON if FormData fails
-      if (response.status >= 400) {
-        console.warn('FormData update failed, trying JSON:', response.data);
-        const updatedProduct = {
-          name,
-          price: priceStr,
-          stock_quantity,
-          discount_percentage,
-          image_url: editDialog.product.image_url, // Retain existing image_url
-          description: '',
-          category_name: editDialog.product.categories?.name || 'General',
-          category_id: editDialog.product.categories?.id || null,
-        };
-
-        console.log('Sending update data (JSON) to:', updateUrl);
-        console.log('JSON payload:', updatedProduct);
-
-        response = await apiClient.put(updateUrl, updatedProduct);
-      }
-
-      const updatedProductData = response.data;
-      console.log('Received updated product:', updatedProductData);
-
-      setProducts(
-        products.map((product) =>
-          product.id === updatedProductData.id ? updatedProductData : product
-        )
-      );
-      setEditDialog({ open: false, product: null });
-      setImageFile(null);
-      toast.success('Product updated successfully.');
-    } catch (err: unknown) {
-      console.error('Error updating product:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      toast.error(`Failed to update product: ${errorMessage}`);
+      response = await apiClient.put(updateUrl, payload, {
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
-  };
+
+    // Validate response
+    if (!response.data || !response.data.id) {
+      throw new Error('Invalid response from server: missing product data');
+    }
+
+    // Ensure the response matches the Product interface
+    const updatedProductData: Product = {
+      ...editDialog.product,
+      ...response.data,
+      price: response.data.price.toString(), // Ensure price is a string
+      categories: response.data.categories || editDialog.product.categories,
+      cart: response.data.cart || editDialog.product.cart,
+    };
+
+    // Update products state
+    setProducts(
+      products.map((product) =>
+        product.id === updatedProductData.id ? updatedProductData : product
+      )
+    );
+
+    setEditDialog({ open: false, product: null });
+    setImageFile(null);
+    toast.success('Product updated successfully.');
+  } catch (err: unknown) {
+    console.error('Error updating product:', err);
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    toast.error(`Failed to update product: ${errorMessage}`);
+  }
+};
 
   return (
-    <div className="w-full p-10">
+    <div className="w-full py-5 md:p-5 lg:p-10">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Product Showcase</h2>
+        <h2 className=" text-lg lg:text-2xl  font-semibold">Product Showcase</h2>
         <Link to="/products">
-          <Button>Create Product</Button>
+          <Button 
+          className="text-[12px] md:text-sm"
+          variant="outline">
+          Create Product</Button>
         </Link>
       </div>
 
@@ -330,7 +449,9 @@ const ProductShowcase: React.FC = () => {
                       }
                     >
                       <DialogTrigger asChild>
-                        <Button variant="outline">Edit</Button>
+                        <Button 
+                        className="text-[12px] md:text-sm"
+                        variant="outline">Edit</Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -425,6 +546,7 @@ const ProductShowcase: React.FC = () => {
                             <Button
                               type="button"
                               variant="outline"
+                              className="text-[12px] md:text-sm"
                               onClick={() => {
                                 setEditDialog({ open: false, product: null });
                                 setImageFile(null);
@@ -432,7 +554,9 @@ const ProductShowcase: React.FC = () => {
                             >
                               Cancel
                             </Button>
-                            <Button type="submit">Save</Button>
+                            <Button
+                            className="text-[12px] md:text-sm"
+                             type="submit">Save</Button>
                           </DialogFooter>
                         </form>
                       </DialogContent>
@@ -446,7 +570,11 @@ const ProductShowcase: React.FC = () => {
                       }
                     >
                       <DialogTrigger asChild>
-                        <Button variant="destructive">Delete</Button>
+                        <Button
+                        className="text-[12px] md:text-sm"
+                         variant="destructive">
+                          Delete
+                          </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -458,11 +586,13 @@ const ProductShowcase: React.FC = () => {
                         <DialogFooter>
                           <Button
                             variant="outline"
+                            className="text-[12px] md:text-sm"
                             onClick={() => setDeleteDialog({ open: false, productId: null })}
                           >
                             Cancel
                           </Button>
                           <Button
+                          className="text-[12px] md:text-sm"
                             variant="destructive"
                             onClick={() => handleDelete(product.id)}
                           >

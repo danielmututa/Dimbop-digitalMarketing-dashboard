@@ -148,11 +148,13 @@ const BlogShowcase: React.FC = () => {
   };
 
   return (
-    <div className="w-full p-10">
+    <div className="w-full  py-5 mdp:p-5 lg:p-10">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Blog Showcase</h2>
+        <h2 className="text-lg lg:text-2xl font-semibold">Blog Showcase</h2>
         <Link to="/blogs">
-          <Button>Create Blog</Button>
+          <Button className="text-[12px] md:text-sm"
+          variant="outline"
+          >Create Blog</Button>
         </Link>
       </div>
 
@@ -203,7 +205,9 @@ const BlogShowcase: React.FC = () => {
                       }
                     >
                       <DialogTrigger asChild>
-                        <Button variant="outline">Edit</Button>
+                        <Button
+                         className='text-[12px] md:text-sm'
+                        variant="outline">Edit</Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -272,6 +276,7 @@ const BlogShowcase: React.FC = () => {
                             <Button
                               type="button"
                               variant="outline"
+                              className='text-[12px] md:text-sm'
                               onClick={() => {
                                 setEditDialog({ open: false, blog: null });
                                 setImageFile(null);
@@ -279,7 +284,9 @@ const BlogShowcase: React.FC = () => {
                             >
                               Cancel
                             </Button>
-                            <Button type="submit">Save</Button>
+                            <Button 
+                             className='text-[12px] md:text-sm'
+                            type="submit">Save</Button>
                           </div>
                         </form>
                       </DialogContent>
@@ -293,7 +300,9 @@ const BlogShowcase: React.FC = () => {
                       }
                     >
                       <DialogTrigger asChild>
-                        <Button variant="destructive">Delete</Button>
+                        <Button
+                         className='text-[12px] md:text-sm'
+                        variant="destructive">Delete</Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -305,12 +314,15 @@ const BlogShowcase: React.FC = () => {
                         </DialogHeader>
                         <div className="flex justify-end space-x-2">
                           <Button
+                           className='text-[12px] md:text-sm'
                             variant="outline"
                             onClick={() => setDeleteDialog({ open: false, blogId: null })}
                           >
                             Cancel
                           </Button>
-                          <Button variant="destructive" onClick={() => handleDelete(blog.id)}>
+                          <Button
+                           className='text-[12px] md:text-sm'
+                          variant="destructive" onClick={() => handleDelete(blog.id)}>
                             Delete
                           </Button>
                         </div>
