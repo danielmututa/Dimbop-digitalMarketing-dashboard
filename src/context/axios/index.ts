@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend-production.up.railway.app';
 
 export const apiClient = axios.create({
   baseURL,
