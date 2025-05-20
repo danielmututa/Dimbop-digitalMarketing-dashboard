@@ -108,66 +108,123 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     }
   },
 
+  // register: async (userData) => {
+  //   set({ isLoading: true, error: null });
+
+  //   const apiData: RegisterAdmin = {
+  //     username: userData.username,
+  //     email: userData.email,
+  //     password: userData.password,
+  //     confirmPassword: userData.confirmpassword,
+  //     role: 'admin',
+  //   };
+
+  //   try {
+  //     const response = await fetch('/api/auth/register', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(apiData),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData: ApiError = await response.json();
+  //       console.error('Register - Error response:', errorData);
+  //       throw new Error(errorData.message || 'Registration failed');
+  //     }
+
+  //     const data = await response.json();
+  //     console.log('Register - Response:', data);
+
+  //     // Handle different response formats
+  //     let user = data.user || data.data?.user || data;
+  //     let token = data.token || data.jwt || data.data?.token;
+
+  //     // If user or token is still missing, try to construct a minimal user object
+  //     if (!user || !token) {
+  //       console.warn('Register - Missing user or token, attempting fallback:', data);
+  //       user = user || {
+  //         username: userData.username,
+  //         email: userData.email,
+  //         role: 'admin',
+  //       };
+  //       token = token || 'temporary-token'; // Replace with actual token if available
+  //       console.log('Register - Fallback user and token:', { user, token });
+  //     }
+
+  //     set({ user, token, isLoading: false });
+  //     setCookie('user', JSON.stringify(user), 15);
+  //     setCookie('token', token, 15);
+  //     toast.success('Registration successful');
+  //   } catch (error: unknown) {
+  //     const errorMessage = isApiError(error)
+  //       ? error.message
+  //       : error instanceof Error
+  //       ? error.message
+  //       : 'An unknown error occurred';
+  //     console.error('Register - Error:', error);
+  //     set({ error: errorMessage, isLoading: false });
+  //     toast.error(errorMessage);
+  //     throw error;
+  //   }
+  // },
+
   register: async (userData) => {
-    set({ isLoading: true, error: null });
+  set({ isLoading: true, error: null });
 
-    const apiData: RegisterAdmin = {
-      username: userData.username,
-      email: userData.email,
-      password: userData.password,
-      confirmPassword: userData.confirmpassword,
-      role: 'admin',
-    };
+  const apiData: RegisterAdmin = {
+    username: userData.username,
+    email: userData.email,
+    password: userData.password,
+    confirmPassword: userData.confirmpassword,
+    role: 'admin',
+  };
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(apiData),
-      });
+  try {
+    // Use the full URL with baseURL
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://lucid-rejoicing-one.up.railway.app';
+    const response = await fetch(`${baseURL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(apiData),
+    });
 
-      if (!response.ok) {
-        const errorData: ApiError = await response.json();
-        console.error('Register - Error response:', errorData);
-        throw new Error(errorData.message || 'Registration failed');
-      }
-
-      const data = await response.json();
-      console.log('Register - Response:', data);
-
-      // Handle different response formats
-      let user = data.user || data.data?.user || data;
-      let token = data.token || data.jwt || data.data?.token;
-
-      // If user or token is still missing, try to construct a minimal user object
-      if (!user || !token) {
-        console.warn('Register - Missing user or token, attempting fallback:', data);
-        user = user || {
-          username: userData.username,
-          email: userData.email,
-          role: 'admin',
-        };
-        token = token || 'temporary-token'; // Replace with actual token if available
-        console.log('Register - Fallback user and token:', { user, token });
-      }
-
-      set({ user, token, isLoading: false });
-      setCookie('user', JSON.stringify(user), 15);
-      setCookie('token', token, 15);
-      toast.success('Registration successful');
-    } catch (error: unknown) {
-      const errorMessage = isApiError(error)
-        ? error.message
-        : error instanceof Error
-        ? error.message
-        : 'An unknown error occurred';
-      console.error('Register - Error:', error);
-      set({ error: errorMessage, isLoading: false });
-      toast.error(errorMessage);
-      throw error;
+    if (!response.ok) {
+      const errorData: ApiError = await response.json();
+      console.error('Register - Error response:', errorData);
+      throw new Error(errorData.message || 'Registration failed');
     }
-  },
 
+    const data = await response.json();
+    console.log('Register - Response:', data);
+
+    // Extract user and token from the actual API response structure
+    const user = data.data?.user;
+    const token = data.data?.token;
+
+    if (!user || !token) {
+      console.error('Register - Missing user or token in response:', data);
+      throw new Error('Invalid response format from server');
+    }
+
+    // Save token in both localStorage AND cookies for consistency
+    localStorage.setItem('token', token);
+    setCookie('user', JSON.stringify(user), 15);
+    setCookie('token', token, 15);
+
+    set({ user, token, isLoading: false });
+    toast.success('Registration successful');
+  } catch (error: unknown) {
+    const errorMessage = isApiError(error)
+      ? error.message
+      : error instanceof Error
+      ? error.message
+      : 'An unknown error occurred';
+    console.error('Register - Error:', error);
+    set({ error: errorMessage, isLoading: false });
+    toast.error(errorMessage);
+    throw error;
+  }
+},
   logout: () => {
     set({ user: null, token: null });
     deleteCookie('user');

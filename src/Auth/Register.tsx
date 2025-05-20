@@ -29,27 +29,60 @@ const Register = () => {
     navigate("/login");
   };
 
-  const onSubmit = async (data: RegisterInput) => {
-    try {
-      console.log("Attempting registration...");
-      await authRegister({
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        confirmpassword: data.confirmPassword,
-        role: "admin",
-      });
+  // const onSubmit = async (data: RegisterInput) => {
+  //   try {
+  //     console.log("Attempting registration...");
+  //     await authRegister({
+  //       username: data.username,
+  //       email: data.email,
+  //       password: data.password,
+  //       confirmpassword: data.confirmPassword,
+  //       role: "admin",
+  //     });
 
-      toast.success("Registration successful!");
-      // Small delay to ensure state propagation
-      setTimeout(() => {
-        navigate("/");
-      }, 100);
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      toast.error(error?.message || "Registration failed");
-    }
-  };
+  //     toast.success("Registration successful!");
+  //     // Small delay to ensure state propagation
+  //     setTimeout(() => {
+  //       navigate("/");
+  //     }, 100);
+  //   } catch (error: any) {
+  //     console.error("Registration error:", error);
+  //     toast.error(error?.message || "Registration failed");
+  //   }
+  // };
+
+
+
+// Add this inside your onSubmit function
+const onSubmit = async (data: RegisterInput) => {
+  try {
+    console.log("Attempting registration...");
+    const result = await authRegister({
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      confirmpassword: data.confirmPassword,
+      role: "admin",
+    });
+    
+    // Log the result to see what's returned
+    console.log("Registration result:", result);
+    
+    // Check if token exists in localStorage after registration
+    const token = localStorage.getItem('token');
+    console.log("Token after registration:", token);
+    
+    toast.success("Registration successful!");
+    // Small delay to ensure state propagation
+    setTimeout(() => {
+      navigate("/");
+    }, 100);
+  } catch (error: any) {
+    console.error("Registration error:", error);
+    toast.error(error?.message || "Registration failed");
+  }
+};
+
 
   return (
     <div className="w-full flex justify-center items-center h-screen">
