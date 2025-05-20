@@ -77,36 +77,36 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     }
   },
 
-  login: async (email, password) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+  // login: async (email, password) => {
+  //   set({ isLoading: true, error: null });
+  //   try {
+  //     const response = await fetch('/api/auth/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ email, password }),
+  //     });
 
-      if (!response.ok) {
-        const errorData: ApiError = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
+  //     if (!response.ok) {
+  //       const errorData: ApiError = await response.json();
+  //       throw new Error(errorData.message || 'Login failed');
+  //     }
 
-      const { user, token } = await response.json();
-      console.log('Login - Response:', { user, token });
-      set({ user, token, isLoading: false });
-      setCookie('user', JSON.stringify(user), 15);
-      setCookie('token', token, 15);
-      toast.success('Login successful');
-    } catch (error: unknown) {
-      const errorMessage = isApiError(error)
-        ? error.message
-        : error instanceof Error
-        ? error.message
-        : 'An unknown error occurred';
-      set({ error: errorMessage, isLoading: false });
-      toast.error(errorMessage);
-    }
-  },
+  //     const { user, token } = await response.json();
+  //     console.log('Login - Response:', { user, token });
+  //     set({ user, token, isLoading: false });
+  //     setCookie('user', JSON.stringify(user), 15);
+  //     setCookie('token', token, 15);
+  //     toast.success('Login successful');
+  //   } catch (error: unknown) {
+  //     const errorMessage = isApiError(error)
+  //       ? error.message
+  //       : error instanceof Error
+  //       ? error.message
+  //       : 'An unknown error occurred';
+  //     set({ error: errorMessage, isLoading: false });
+  //     toast.error(errorMessage);
+  //   }
+  // },
 
   // register: async (userData) => {
   //   set({ isLoading: true, error: null });
@@ -168,6 +168,48 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   //   }
   // },
 
+  login: async (email, password) => {
+  set({ isLoading: true, error: null });
+  try {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://lucid-rejoicing-one.up.railway.app';
+    const response = await fetch(`${baseURL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData: ApiError = await response.json();
+      throw new Error(errorData.message || 'Login failed');
+    }
+
+    const data = await response.json();
+    console.log('Login - Response:', data);
+    
+    const user = data.data?.user || data.user;
+    const token = data.data?.token || data.token;
+    
+    if (!user || !token) {
+      throw new Error('Invalid response format from server');
+    }
+    
+    // Save in both localStorage AND cookies
+    localStorage.setItem('token', token);
+    setCookie('user', JSON.stringify(user), 15);
+    setCookie('token', token, 15);
+    
+    set({ user, token, isLoading: false });
+    toast.success('Login successful');
+  } catch (error: unknown) {
+    const errorMessage = isApiError(error)
+      ? error.message
+      : error instanceof Error
+      ? error.message
+      : 'An unknown error occurred';
+    set({ error: errorMessage, isLoading: false });
+    toast.error(errorMessage);
+  }
+},
   register: async (userData) => {
   set({ isLoading: true, error: null });
 
