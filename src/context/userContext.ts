@@ -223,7 +223,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
   try {
     // Use the full URL with baseURL
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://lucid-rejoicing-one.up.railway.app';
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend-one.up.railway.app';
     const response = await fetch(`${baseURL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

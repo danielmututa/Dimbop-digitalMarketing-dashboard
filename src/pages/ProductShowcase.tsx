@@ -89,7 +89,8 @@ const ProductShowcase: React.FC = () => {
 
   // Base URL for backend
   // const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend-production-1407.up.railway.app';
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend-one.up.railway.app';
+ 
 
   // Normalize image URL
   const getImageUrl = (imageUrl: string) => {
