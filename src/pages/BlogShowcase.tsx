@@ -42,7 +42,7 @@ const BlogShowcase: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Base URL for backend (for image normalization)
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend-one.up.railway.app';
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dimbop.up.railway.app';
 
   // Normalize image URL
   const getImageUrl = (imageUrl: string | undefined): string => {
