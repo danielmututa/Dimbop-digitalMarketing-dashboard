@@ -60,22 +60,40 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   isLoading: false,
   error: null,
 
-  initializeAuth: () => {
-    const userCookie = getCookie('user');
-    const token = getCookie('token');
+  // initializeAuth: () => {
+  //   const userCookie = getCookie('user');
+  //   const token = getCookie('token');
 
-    if (userCookie && token) {
-      try {
-        const user = JSON.parse(userCookie);
-        console.log('initializeAuth - Restored user:', user);
-        set({ user, token });
-      } catch (e) {
-        console.error('Failed to parse user cookie', e);
-      }
-    } else {
-      console.log('initializeAuth - No user or token cookies found');
+  //   if (userCookie && token) {
+  //     try {
+  //       const user = JSON.parse(userCookie);
+  //       console.log('initializeAuth - Restored user:', user);
+  //       set({ user, token });
+  //     } catch (e) {
+  //       console.error('Failed to parse user cookie', e);
+  //     }
+  //   } else {
+  //     console.log('initializeAuth - No user or token cookies found');
+  //   }
+  // },
+
+
+initializeAuth: () => {
+  const userCookie = getCookie('user');
+  const token = localStorage.getItem('token') || getCookie('token');
+
+  if (userCookie && token) {
+    try {
+      const user = JSON.parse(userCookie);
+      console.log('initializeAuth - Restored user:', user);
+      set({ user, token });
+    } catch (e) {
+      console.error('Failed to parse user cookie', e);
     }
-  },
+  } else {
+    console.log('initializeAuth - No user or token cookies found');
+  }
+},
 
   // login: async (email, password) => {
   //   set({ isLoading: true, error: null });
@@ -171,7 +189,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   login: async (email, password) => {
   set({ isLoading: true, error: null });
   try {
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimbop.up.railway.app';
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
     const response = await fetch(`${baseURL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -223,7 +241,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
   try {
     // Use the full URL with baseURL
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimbop.up.railway.app';
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
     const response = await fetch(`${baseURL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -54,10 +54,39 @@ const Register = () => {
 
 
 // Add this inside your onSubmit function
+// const onSubmit = async (data: RegisterInput) => {
+//   try {
+//     console.log("Attempting registration...");
+//     const result = await authRegister({
+//       username: data.username,
+//       email: data.email,
+//       password: data.password,
+//       confirmpassword: data.confirmPassword,
+//       role: "admin",
+//     });
+    
+//     // Log the result to see what's returned
+//     console.log("Registration result:", result);
+    
+//     // Check if token exists in localStorage after registration
+//     const token = localStorage.getItem('token');
+//     console.log("Token after registration:", token);
+    
+//     toast.success("Registration successful!");
+//     // Small delay to ensure state propagation
+//     setTimeout(() => {
+//       navigate("/");
+//     }, 100);
+//   } catch (error: any) {
+//     console.error("Registration error:", error);
+//     toast.error(error?.message || "Registration failed");
+//   }
+// };
+
 const onSubmit = async (data: RegisterInput) => {
   try {
     console.log("Attempting registration...");
-    const result = await authRegister({
+    await authRegister({
       username: data.username,
       email: data.email,
       password: data.password,
@@ -65,23 +94,31 @@ const onSubmit = async (data: RegisterInput) => {
       role: "admin",
     });
     
-    // Log the result to see what's returned
-    console.log("Registration result:", result);
-    
-    // Check if token exists in localStorage after registration
-    const token = localStorage.getItem('token');
-    console.log("Token after registration:", token);
-    
-    toast.success("Registration successful!");
-    // Small delay to ensure state propagation
-    setTimeout(() => {
-      navigate("/");
-    }, 100);
+    // Wait for user state to update
+    let attempts = 0;
+    const checkUser = () => {
+      attempts++;
+      if (user || attempts > 10) {
+        if (user) {
+          toast.success("Registration successful!");
+          navigate("/");
+        } else {
+          console.warn("User state not updated after registration");
+          navigate("/login");
+        }
+      } else {
+        setTimeout(checkUser, 100);
+      }
+    };
+    checkUser();
   } catch (error: any) {
     console.error("Registration error:", error);
     toast.error(error?.message || "Registration failed");
   }
 };
+
+
+
 
 
   return (
