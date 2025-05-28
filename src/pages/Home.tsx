@@ -1,5 +1,4 @@
-import AnalyticsDashboard from "@/ChartGraphs/BrowserDeviceCharts"
-import BarChart from "@/ChartGraphs/Revenue"
+
 // import Dashboard from "@/ChartGraphs/Two"
 import Dashboard from "@/context/All-Graphs"
 const Home = () => {
