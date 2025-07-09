@@ -38,7 +38,7 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormData) => {
     console.log("Form submitted!")
 
-    // Initialize the loading toast ID as undefined
+    
     let loadingToastId: string | number | undefined
 
     try {

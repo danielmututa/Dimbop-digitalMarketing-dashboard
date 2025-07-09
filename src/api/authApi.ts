@@ -26,25 +26,6 @@ export const loginApi = async (data: LoginSchema) : Promise<AuthResponse>=> {
 
 
 
-// export const RegisterApi = async (data: RegisterInput): Promise<AuthRegisterResponse> => {
-//   try {
-//     const response = await apiClient.post('/api/auth/register', data);
-//     return response.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       const backendError = error.response?.data;
-
-//       const errorMessage =
-//         backendError?.message ||
-//         (typeof backendError === 'string' ? backendError : null) ||
-//         'Registration failed';
-
-//       throw new Error(errorMessage);
-//     }
-
-//     throw new Error('An unexpected error occurred');
-//   }
-// };
 
 
 export const RegisterApi = async (data: RegisterInput): Promise<AuthRegisterResponse> => {
