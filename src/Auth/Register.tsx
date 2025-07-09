@@ -1,228 +1,168 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { RegisterInput } from "@/lib/schemas/auth/register";
-import { useAuthStore } from "@/context/userContext";
-import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { useAuthStore } from "@/context/userContext"
+import { useEffect } from "react"
+import { toast, Toaster } from "sonner"
 
 const Register = () => {
-  const navigate = useNavigate();
-  const { register: authRegister, user } = useAuthStore();
+  const navigate = useNavigate()
+  const { register: authRegister, user } = useAuthStore()
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     watch,
-  } = useForm<RegisterInput>();
+  } = useForm()
 
-  // Debug user state changes
   useEffect(() => {
-    console.log('Register - Current user:', user);
-  }, [user]);
+    console.log("Register - Current user:", user)
+  }, [user])
 
   const handleLoginRedirect = () => {
-    console.log("Redirecting to login...");
-    navigate("/login");
-  };
-
-  // const onSubmit = async (data: RegisterInput) => {
-  //   try {
-  //     console.log("Attempting registration...");
-  //     await authRegister({
-  //       username: data.username,
-  //       email: data.email,
-  //       password: data.password,
-  //       confirmpassword: data.confirmPassword,
-  //       role: "admin",
-  //     });
-
-  //     toast.success("Registration successful!");
-  //     // Small delay to ensure state propagation
-  //     setTimeout(() => {
-  //       navigate("/");
-  //     }, 100);
-  //   } catch (error: any) {
-  //     console.error("Registration error:", error);
-  //     toast.error(error?.message || "Registration failed");
-  //   }
-  // };
-
-
-
-// Add this inside your onSubmit function
-// const onSubmit = async (data: RegisterInput) => {
-//   try {
-//     console.log("Attempting registration...");
-//     const result = await authRegister({
-//       username: data.username,
-//       email: data.email,
-//       password: data.password,
-//       confirmpassword: data.confirmPassword,
-//       role: "admin",
-//     });
-    
-//     // Log the result to see what's returned
-//     console.log("Registration result:", result);
-    
-//     // Check if token exists in localStorage after registration
-//     const token = localStorage.getItem('token');
-//     console.log("Token after registration:", token);
-    
-//     toast.success("Registration successful!");
-//     // Small delay to ensure state propagation
-//     setTimeout(() => {
-//       navigate("/");
-//     }, 100);
-//   } catch (error: any) {
-//     console.error("Registration error:", error);
-//     toast.error(error?.message || "Registration failed");
-//   }
-// };
-
-const onSubmit = async (data: RegisterInput) => {
-  try {
-    console.log("Attempting registration...");
-    await authRegister({
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      confirmpassword: data.confirmPassword,
-      role: "admin",
-    });
-    
-    // Wait for user state to update
-    let attempts = 0;
-    const checkUser = () => {
-      attempts++;
-      if (user || attempts > 10) {
-        if (user) {
-          toast.success("Registration successful!");
-          navigate("/");
-        } else {
-          console.warn("User state not updated after registration");
-          navigate("/login");
-        }
-      } else {
-        setTimeout(checkUser, 100);
-      }
-    };
-    checkUser();
-  } catch (error: any) {
-    console.error("Registration error:", error);
-    toast.error(error?.message || "Registration failed");
+    navigate("/login")
   }
-};
 
+  const onSubmit = async (data) => {
+    console.log("Form submitted!")
 
+    // Store the loading toast ID so we can dismiss it later
+    let loadingToastId
 
+    try {
+      // Show loading toast and store its ID
+      loadingToastId = toast.loading("Creating your account...")
 
+      await authRegister({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        confirmpassword: data.confirmPassword,
+        role: "admin",
+      })
+
+      // DISMISS the loading toast first
+      toast.dismiss(loadingToastId)
+
+      // Then show success toast
+      toast.success("✅ Account created successfully!")
+      navigate("/")
+    } catch (error) {
+      console.log("Registration error:", error)
+
+      // DISMISS the loading toast first
+      if (loadingToastId) {
+        toast.dismiss(loadingToastId)
+      }
+
+      // Then show error toast
+      toast.error("❌ Registration Failed!")
+
+      // Show the actual error message
+      const errorMessage = error.message || "Something went wrong"
+      toast.error(errorMessage)
+    }
+  }
 
   return (
-    <div className="w-full flex justify-center items-center h-screen">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full md:w-[60%] xl:w-[40%]">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Welcome to Admin</CardTitle>
-            <CardDescription>Create your account</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex items-start flex-col">
-              <label className="text-sm">Username</label>
-              <Input
-                {...register("username", {
-                  required: "Username is required",
-                  minLength: {
-                    value: 3,
-                    message: "Username must be at least 3 characters",
-                  },
-                })}
-                className="italic"
-                placeholder="example Peter Parker"
-              />
-              {errors.username && (
-                <span className="text-red-500 text-xs">{errors.username.message}</span>
-              )}
-            </div>
+    <>
+      {/* ADD TOASTER HERE - This makes toasts show up! */}
+      <Toaster position="top-right" richColors closeButton />
 
-            <div className="flex items-start flex-col">
-              <label className="text-sm">Email</label>
-              <Input
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email address",
-                  },
-                })}
-                className="italic"
-                placeholder="example parkerpeter@gmail.com"
-              />
-              {errors.email && (
-                <span className="text-red-500 text-xs">{errors.email.message}</span>
-              )}
-            </div>
+      <div className="w-full flex justify-center items-center min-h-screen p-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full md:w-[60%] xl:w-[40%] max-w-md">
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle>Welcome to Admin</CardTitle>
+              <CardDescription>Create your account</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex items-start flex-col gap-1">
+                <label className="text-sm font-medium">Username</label>
+                <Input
+                  {...register("username", {
+                    required: "Username is required",
+                    minLength: {
+                      value: 3,
+                      message: "Username must be at least 3 characters",
+                    },
+                  })}
+                  className="italic"
+                  placeholder="example Peter Parker"
+                />
+                {errors.username && <span className="text-red-500 text-xs">{errors.username.message}</span>}
+              </div>
 
-            <div className="flex items-start flex-col">
-              <label className="text-sm">Password</label>
-              <Input
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
-                  },
-                })}
-                type="password"
-                className="italic"
-                placeholder="example AJ!#04qp"
-              />
-              {errors.password && (
-                <span className="text-red-500 text-xs">{errors.password.message}</span>
-              )}
-            </div>
+              <div className="flex items-start flex-col gap-1">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  type="email"
+                  className="italic"
+                  placeholder="example parkerpeter@gmail.com"
+                />
+                {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
+              </div>
 
-            <div className="flex items-start flex-col">
-              <label className="text-sm">Confirm Password</label>
-              <Input
-                {...register("confirmPassword", {
-                  required: "Please confirm your password",
-                  validate: (value) =>
-                    value === watch("password") || "Passwords do not match",
-                })}
-                type="password"
-                className="italic"
-                placeholder="AJ!#04qp"
-              />
-              {errors.confirmPassword && (
-                <span className="text-red-500 text-xs">{errors.confirmPassword.message}</span>
-              )}
-            </div>
-          </CardContent>
+              <div className="flex items-start flex-col gap-1">
+                <label className="text-sm font-medium">Password</label>
+                <Input
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
+                  type="password"
+                  className="italic"
+                  placeholder="example AJ!#04qp"
+                />
+                {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
+              </div>
 
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" disabled={isSubmitting} className="w-full">
-              {isSubmitting ? "Registering..." : "Register"}
-            </Button>
+              <div className="flex items-start flex-col gap-1">
+                <label className="text-sm font-medium">Confirm Password</label>
+                <Input
+                  {...register("confirmPassword", {
+                    required: "Please confirm your password",
+                    validate: (value) => value === watch("password") || "Passwords do not match",
+                  })}
+                  type="password"
+                  className="italic"
+                  placeholder="AJ!#04qp"
+                />
+                {errors.confirmPassword && (
+                  <span className="text-red-500 text-xs">{errors.confirmPassword.message}</span>
+                )}
+              </div>
+            </CardContent>
 
-            <div className="w-full flex justify-between items-center">
-              <p>Have an account?</p>
-              <Button
-                onClick={handleLoginRedirect}
-                variant="ghost"
-                type="button"
-              >
-                Login
+            <CardFooter className="flex flex-col gap-4">
+              <Button type="submit" disabled={isSubmitting} className="w-full">
+                {isSubmitting ? "Registering..." : "Register"}
               </Button>
-            </div>
-          </CardFooter>
-        </Card>
-      </form>
-    </div>
-  );
-};
+              <div className="w-full flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">Have an account?</p>
+                <Button onClick={handleLoginRedirect} variant="ghost" type="button" size="sm">
+                  Login
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        </form>
+      </div>
+    </>
+  )
+}
 
-export default Register;
+export default Register

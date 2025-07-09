@@ -228,10 +228,67 @@ initializeAuth: () => {
     toast.error(errorMessage);
   }
 },
-  register: async (userData) => {
+//   register: async (userData) => {
+//   set({ isLoading: true, error: null });
+
+//   const apiData: RegisterAdmin = {
+//     username: userData.username,
+//     email: userData.email,
+//     password: userData.password,
+//     confirmPassword: userData.confirmpassword,
+//     role: 'admin',
+//   };
+
+//   try {
+//     // Use the full URL with baseURL
+//     const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
+//     const response = await fetch(`${baseURL}/api/auth/register`, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(apiData),
+//     });
+
+//     if (!response.ok) {
+//       const errorData: ApiError = await response.json();
+//       console.error('Register - Error response:', errorData);
+//       throw new Error(errorData.message || 'Registration failed');
+//     }
+
+//     const data = await response.json();
+//     console.log('Register - Response:', data);
+
+//     // Extract user and token from the actual API response structure
+//     const user = data.data?.user;
+//     const token = data.data?.token;
+
+//     if (!user || !token) {
+//       console.error('Register - Missing user or token in response:', data);
+//       throw new Error('Invalid response format from server');
+//     }
+
+//     // Save token in both localStorage AND cookies for consistency
+//     localStorage.setItem('token', token);
+//     setCookie('user', JSON.stringify(user), 15);
+//     setCookie('token', token, 15);
+
+//     set({ user, token, isLoading: false });
+//     toast.success('Registration successful');
+//   } catch (error: unknown) {
+//     const errorMessage = isApiError(error)
+//       ? error.message
+//       : error instanceof Error
+//       ? error.message
+//       : 'An unknown error occurred';
+//     console.error('Register - Error:', error);
+//     set({ error: errorMessage, isLoading: false });
+//     toast.error(errorMessage);
+//     throw error;
+//   }
+// },
+register: async (userData) => {
   set({ isLoading: true, error: null });
 
-  const apiData: RegisterAdmin = {
+  const apiData = {
     username: userData.username,
     email: userData.email,
     password: userData.password,
@@ -240,7 +297,6 @@ initializeAuth: () => {
   };
 
   try {
-    // Use the full URL with baseURL
     const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
     const response = await fetch(`${baseURL}/api/auth/register`, {
       method: 'POST',
@@ -248,25 +304,24 @@ initializeAuth: () => {
       body: JSON.stringify(apiData),
     });
 
+    const data = await response.json(); // Always parse JSON first
+
     if (!response.ok) {
-      const errorData: ApiError = await response.json();
-      console.error('Register - Error response:', errorData);
-      throw new Error(errorData.message || 'Registration failed');
+      // Extract error message from backend response
+      const errorMessage = data.message || 
+                         data.error || 
+                         'Registration failed';
+      throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    console.log('Register - Response:', data);
-
-    // Extract user and token from the actual API response structure
-    const user = data.data?.user;
-    const token = data.data?.token;
+    // Handle successful response
+    const user = data.user || data.data?.user;
+    const token = data.token || data.data?.token;
 
     if (!user || !token) {
-      console.error('Register - Missing user or token in response:', data);
       throw new Error('Invalid response format from server');
     }
 
-    // Save token in both localStorage AND cookies for consistency
     localStorage.setItem('token', token);
     setCookie('user', JSON.stringify(user), 15);
     setCookie('token', token, 15);
@@ -274,12 +329,12 @@ initializeAuth: () => {
     set({ user, token, isLoading: false });
     toast.success('Registration successful');
   } catch (error: unknown) {
-    const errorMessage = isApiError(error)
-      ? error.message
-      : error instanceof Error
-      ? error.message
-      : 'An unknown error occurred';
-    console.error('Register - Error:', error);
+    // Simplified error handling
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'Registration failed';
+    
+    console.error('Registration error:', error);
     set({ error: errorMessage, isLoading: false });
     toast.error(errorMessage);
     throw error;
