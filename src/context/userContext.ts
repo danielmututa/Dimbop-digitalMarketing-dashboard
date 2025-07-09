@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { User } from '../components/interfaces/auth';
 import { toast } from 'react-toastify';
-import { RegisterAdmin } from '@/components/interfaces/auth';
+
 
 // Cookie helper functions
 const setCookie = (name: string, value: string, days: number) => {
