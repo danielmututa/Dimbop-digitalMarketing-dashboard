@@ -43,33 +43,33 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
   const [categories, setCategories] = useState<Category[]>([])
 
   // DEBUG FUNCTION - Check what your API is returning
-  const debugAPI = async () => {
-    console.log("🔍 DEBUGGING API...")
-    toast.loading("Debugging API...")
+  // const debugAPI = async () => {
+  //   console.log("🔍 DEBUGGING API...")
+  //   toast.loading("Debugging API...")
 
-    try {
-      console.log("Testing apiClient with /api/products...")
+  //   try {
+  //     console.log("Testing apiClient with /api/products...")
 
-      const response = await apiClient({
-        url: "/api/products",
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      })
+  //     const response = await apiClient({
+  //       url: "/api/products",
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //     })
 
-      console.log("API Response:", response.data)
-      toast.dismiss()
-      toast.success("✅ API is working!")
+  //     console.log("API Response:", response.data)
+  //     toast.dismiss()
+  //     toast.success("✅ API is working!")
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        console.log("Sample product structure:", response.data[0])
-      }
-    } catch (error) {
-      console.error("Debug error:", error)
-      toast.dismiss()
-      toast.error("❌ API connection failed!")
-      toast.error("Check if your backend is running")
-    }
-  }
+  //     if (Array.isArray(response.data) && response.data.length > 0) {
+  //       console.log("Sample product structure:", response.data[0])
+  //     }
+  //   } catch (error) {
+  //     console.error("Debug error:", error)
+  //     toast.dismiss()
+  //     toast.error("❌ API connection failed!")
+  //     toast.error("Check if your backend is running")
+  //   }
+  // }
 
   // FETCH categories using the same apiClient as ProductShowcase
   const fetchCategories = async () => {
@@ -378,7 +378,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
         <h2 className="text-lg lg:text-2xl font-medium mb-4">{id ? "Edit Product" : "Create New Product/Category"}</h2>
 
         {/* DEBUG BUTTONS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <Button type="button" onClick={debugAPI} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3">
             🔍 DEBUG API CONNECTION
           </Button>
@@ -389,7 +389,7 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
           >
             🔄 RETRY LOAD CATEGORIES
           </Button>
-        </div>
+        </div> */}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

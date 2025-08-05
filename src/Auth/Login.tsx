@@ -140,7 +140,7 @@ import { useForm } from "react-hook-form"
 import { useAuthStore } from "@/context/userContext"
 import { useEffect } from "react"
 import { toast, Toaster } from "sonner"
-
+// import GoogleSignIn from "@/Auth/Googlesignin"
 interface LoginInput {
   email: string
   password: string
@@ -162,7 +162,35 @@ const Login = () => {
   }, [user])
 
   // TEST TOAST FUNCTION
- 
+
+  // const handleGoogleSignIn = async () => {
+  //   console.log("Google Sign-In initiated")
+
+  //   try {
+  //     // TODO: Implement actual Google OAuth here
+  //     // For now, simulate successful Google login
+  //     await new Promise((resolve) => setTimeout(resolve, 1500))
+
+  //     // Mock user data from Google
+  //     const mockGoogleUser = {
+  //       id: "google_123",
+  //       username: "Google User",
+  //       email: "user@gmail.com",
+  //       provider: "google",
+  //     }
+
+  //     // You can call your login function or set user directly
+  //     // await login(mockGoogleUser.email, "google_auth")
+
+  //     toast.success("✅ Signed in with Google!")
+  //     navigate("/")
+  //   } catch (error) {
+  //     console.error("Google sign-in error:", error)
+  //     toast.error("❌ Google sign-in failed!")
+  //   }
+  // }
+  
+
 
   const handleSubmitForm = async (data: LoginInput) => {
     console.log("Attempting login with:", data)
@@ -267,6 +295,7 @@ const Login = () => {
                   Register
                 </Button>
               </div>
+              {/* <GoogleSignIn onGoogleSignIn={handleGoogleSignIn} disabled={isSubmitting} /> */}
             </CardFooter>
           </Card>
         </form>
