@@ -3,7 +3,7 @@ import { useAuthStore } from '@/context/userContext';
 
 export const AuthRoute = () => {
   const { user } = useAuthStore();
-  console.log('AuthRoute - Current user:', user);
+  // console.log('AuthRoute - Current user:', user);
 
   // If user is already authenticated, redirect to dashboard
   if (user) {

@@ -1,422 +1,501 @@
-// import React, { useState,useEffect } from 'react';
-// // import blogsone from '../Images/Salea.jpg';
+import { useParams } from 'react-router-dom';
+import { GetBlogById } from '@/api';
+import { useState, useEffect } from 'react';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { BlogPostSM } from '@/components/interfaces/blog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
-// import { Link } from 'react-router-dom';
-// import Fastdelivary from '../home/Fastdelivary';
-
-// const Blog = () => {
-//   const [currentIndex, setCurrentIndex] = useState(0);
-//   const blognews = [
-//     {
-//       type: 'Iphone',
-//       img: 'blogIpn.jpg',
-//       des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-//       button: 'Read More',
-//     },
-//     {
-//       type: 'Sumsamg',
-//       img: 'blogSUM.jpg',
-//       des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-//       button: 'Read More',
-//     },
-//     {
-//       type: 'Sumsamg',
-//       img: 'SamsumgW.jpg',
-//       des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-//       button: 'Read More',
-//     },
-//     {
-//       type: 'Iphone',
-//       img: 'sell-product.jpg',
-//       des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-//       button: 'Read More',
-//     },
-//   ];
-
-//   const  blogside = [
-//     {
-//         img:'Salea.jpg',
-//         date:'Feb 25, 2025',
-//         type:'Business,Coaching',
-//         head:'Iphone',
-//         des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-       
-//     },
-//     {
-//         img:'sell-product.jpg',
-//         date:'Feb 25, 2025',
-//         type:'Business,Coaching',
-//         head:'Oppo',
-//         des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-       
-//     },
-//     {
-//         img:'IphoneSiv.jpg',
-//         date:'Feb 25, 2025',
-//         type:'Business,Coaching',
-//         head:'Iphone',
-//         des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-       
-//     }
-//   ]
-
-// const  blog= [
-//     {
-//       img:'onlineshop.jpg',
-//       head:'Iphone',
-//       date:'Feb 25, 2025',
-//       type:'Business,Coaching',
-//       des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-//       button:'read more'
-
-//     },
-//     {
-//       img:'onlineshop.jpg',
-//       head:'Iphone',
-//       date:'Feb 25, 2025',
-//       type:'Business,Coaching',
-//       des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-//       button:'read more'
-
-//     },
-//     {
-//       img:'onlineshop.jpg',
-//       head:'Iphone',
-//       date:'Feb 25, 2025',
-//       type:'Business,Coaching',
-//       des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-//       button:'read more'
-
-//     },
-//     {
-//       img:'onlineshop.jpg',
-//       head:'Iphone',
-//       date:'Feb 25, 2025',
-//       type:'Business,Coaching',
-//       des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-//       button:'read more'
-
-//     },
-//     {
-//       img:'onlineshop.jpg',
-//       head:'Iphone',
-//       date:'Feb 25, 2025',
-//       type:'Business,Coaching',
-//       des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-//       button:'read more'
-
-//     },
-//     {
-//       img:'onlineshop.jpg',
-//       head:'Iphone',
-//       date:'Feb 25, 2025',
-//       type:'Business,Coaching',
-//       des:'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-//       button:'read more'
-
-//     },
-//   ]
-
-//   useEffect(() => {
-//     const intervalId = setInterval(() => {
-//       setCurrentIndex((prevIndex) => (prevIndex + 1) % blognews.length);
-//     }, 5000); // switch slides every 5 seconds
-
-//     return () => clearInterval(intervalId);
-//   }, [blognews.length]);
-
-//   return (
-//     <div className="mb-20">
-//     <div className="px-5 pt-[100px] md:px-10 lg:px-20 xl:px-[100px]">
-//       <div className="mb-12 flex flex-col gap-2">
-//         <h2 className="font-montserratBold text-[20px] md:text-[23px] lg:text-[26px]">Blog</h2>
-//         <div className="border border-buttons bg-buttons w-[200px]"></div>
-//         <div className="flex mt-4 md:mt-5 xl:mt-12 flex-col lg:flex-row justify-between">
-//           <div className="w-full lg:w-[35%] flex">
-//             <div className="w-full  relative">
-//               <img src={require(`../Images/${blognews[currentIndex].img}`)} className="h-[350px] w-full object-cover" alt="" />
-//               <div className="w-full h-full px-5 xl:px-10  gap-1 absolute bg-blue-600/40 top-0 flex flex-col justify-center">
-//                 <h3 className="font-montserratBold text-white">{blognews[currentIndex].type}</h3>
-//                 <p className="font-montserrat text-sm text-white">{blognews[currentIndex].des}</p>
-//                 <Link className="font-montserratBold text-white bg-buttons w-[130px] mt-3 flex justify-center p-[5px]" to="#" >
-//                   {blognews[currentIndex].button}
-//                 </Link>
-//                 <div className="flex items-center justify-center gap-2 mt-8">
-//                   {blognews.map((_, index) => (
-//                     <div key={index} className={`w-2 h-2 rounded-full ${currentIndex === index ? 'bg-buttons' : 'bg-gray-300'}`} />
-//                   ))}
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-                  
-                  
-
-
-//           <div className="flex w-full lg:w-[62%] mt-8 lg:mt-0  gap-4 justify-between flex-col">
-//             {
-//                blogside.map((item,index) => (
-//              <div  key={index} className="flex gap-4 justify-between items-center">
-//               <img src={require('../Images/' + item.img)} className='  h-[120px] lg:h-[98px] object-cover w-[80px] md:w-[200px]' alt="" />
-//                 <div className="">
-//                   <p className='font-montserratBold'>{item.head}</p>
-//                   <div className="flex gap-[4px]"><p className='font-montserrat text-sm'>{item.date}</p> | <p className='font-montserrat text-sm'>{item.type}</p></div>
-                  
-//                   <p className='font-montserrat text-sm'>{item.des}</p>
-//                 </div>
-//              </div>
-//                ))
-//             }
-//           </div>
-//         </div>
- 
-//             <div className="flex flex-wrap gap-5  xl:gap-8 xl:mt-20 mt-9 justify-between">
-//               {
-//                 blog.map((item,index) =>(
-//                  <div className=" w-[full]  lg:w-[31%] md:pb-2  md:w-[48%]">
-//                  <img src={require('../Images/' + item.img)} className='w-full h-[180px] object-cover'  alt="" />
-              
-//                   <p className='font-montserratBold pt-2'>{item.head}</p>
-//                   <div className="flex gap-[4px]"><p className='font-montserrat text-sm'>{item.date}</p> | <p className='font-montserrat text-sm'>{item.type}</p></div>
-//                   <p className='font-montserrat text-sm'>{item.des}</p>
-//                  <Link className='font-montserratBold text-[13px] text-buttons underline'>Read more</Link>
-//                  </div>
-//                 ))
-                
-//               }
-//             </div>
-
-//       </div>
-//     </div>
-//     <Fastdelivary/>
-//     </div>
-// );
-// };
-
-// export default Blog;
-
-
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Fastdelivary from '../home/Fastdelivary';
-
-interface BlogNewsItem {
-  type: string;
-  img: string;
-  des: string;
-  button: string;
-}
-
-interface BlogSideItem {
-  img: string;
-  date: string;
-  type: string;
-  head: string;
-  des: string;
-}
-
-interface BlogItem {
-  img: string;
-  head: string;
-  date: string;
-  type: string;
-  des: string;
-  button: string;
-}
-
-const Blog: React.FC = () => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  
-  const blognews: BlogNewsItem[] = [
-    {
-      type: 'Iphone',
-      img: 'blogIpn.jpg',
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-      button: 'Read More',
-    },
-    {
-      type: 'Sumsamg',
-      img: 'blogSUM.jpg',
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-      button: 'Read More',
-    },
-    {
-      type: 'Sumsamg',
-      img: 'SamsumgW.jpg',
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-      button: 'Read More',
-    },
-    {
-      type: 'Iphone',
-      img: 'sell-product.jpg',
-      des: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci voluptate quaerat earum enim suscipit et rem blanditiis nostrum excepturi? Sunt itaque repellat aliquid adipisci. Veritatis nihil assumenda temporibus reiciendis aliquam!",
-      button: 'Read More',
-    },
-  ];
-
-  const blogside: BlogSideItem[] = [
-    {
-      img: 'Salea.jpg',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      head: 'Iphone',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-    },
-    {
-      img: 'sell-product.jpg',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      head: 'Oppo',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-    },
-    {
-      img: 'IphoneSiv.jpg',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      head: 'Iphone',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-    }
-  ];
-
-  const blog: BlogItem[] = [
-    {
-      img: 'onlineshop.jpg',
-      head: 'Iphone',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-      button: 'read more'
-    },
-    {
-      img: 'onlineshop.jpg',
-      head: 'Iphone',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-      button: 'read more'
-    },
-    {
-      img: 'onlineshop.jpg',
-      head: 'Iphone',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-      button: 'read more'
-    },
-    {
-      img: 'onlineshop.jpg',
-      head: 'Iphone',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-      button: 'read more'
-    },
-    {
-      img: 'onlineshop.jpg',
-      head: 'Iphone',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-      button: 'read more'
-    },
-    {
-      img: 'onlineshop.jpg',
-      head: 'Iphone',
-      date: 'Feb 25, 2025',
-      type: 'Business,Coaching',
-      des: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatem qui adipisci error quis repellendus.',
-      button: 'read more'
-    },
-  ];
+const Blog = () => {
+  const { id } = useParams();
+  const [blog, setBlog] = useState<BlogPostSM | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % blognews.length);
-    }, 5000);
+    const fetchBlog = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        if (!id) {
+          throw new Error('No blog ID provided');
+        }
 
-    return () => clearInterval(intervalId);
-  }, [blognews.length]);
+        const response = await GetBlogById(id);
+        
+        if (!response) {
+          throw new Error('Blog not found');
+        }
 
-  return (
-    <div className="mb-20">
-      <div className="px-5 pt-[100px] md:px-10 lg:px-20 xl:px-[100px]">
-        <div className="mb-12 flex flex-col gap-2">
-          <h2 className="font-montserratBold text-[20px] md:text-[23px] lg:text-[26px]">Blog</h2>
-          <div className="border border-buttons bg-buttons w-[200px]"></div>
-          <div className="flex mt-4 md:mt-5 xl:mt-12 flex-col lg:flex-row justify-between">
-            <div className="w-full lg:w-[35%] flex">
-              <div className="w-full relative">
-                <img 
-                  src={`/Images/${blognews[currentIndex].img}`} 
-                  className="h-[350px] w-full object-cover" 
-                  alt={blognews[currentIndex].type} 
-                />
-                <div className="w-full h-full px-5 xl:px-10 gap-1 absolute bg-blue-600/40 top-0 flex flex-col justify-center">
-                  <h3 className="font-montserratBold text-white">{blognews[currentIndex].type}</h3>
-                  <p className="font-montserrat text-sm text-white">{blognews[currentIndex].des}</p>
-                  <Link className="font-montserratBold text-white bg-buttons w-[130px] mt-3 flex justify-center p-[5px]" to="#" >
-                    {blognews[currentIndex].button}
-                  </Link>
-                  <div className="flex items-center justify-center gap-2 mt-8">
-                    {blognews.map((_, index) => (
-                      <div key={index} className={`w-2 h-2 rounded-full ${currentIndex === index ? 'bg-buttons' : 'bg-gray-300'}`} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+        setBlog(response);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load blog');
+        console.error('Error fetching blog:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-            <div className="flex w-full lg:w-[62%] mt-8 lg:mt-0 gap-4 justify-between flex-col">
-              {blogside.map((item, index) => (
-                <div key={index} className="flex gap-4 justify-between items-center">
-                  <img 
-                    src={`/Images/${item.img}`} 
-                    className='h-[120px] lg:h-[98px] object-cover w-[80px] md:w-[200px]' 
-                    alt={item.head} 
-                  />
-                  <div className="">
-                    <p className='font-montserratBold'>{item.head}</p>
-                    <div className="flex gap-[4px]">
-                      <p className='font-montserrat text-sm'>{item.date}</p> | 
-                      <p className='font-montserrat text-sm'>{item.type}</p>
-                    </div>
-                    <p className='font-montserrat text-sm'>{item.des}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+    fetchBlog();
+  }, [id]);
+
+  // Create an array of all available images for the carousel
+  const getCarouselImages = () => {
+    if (!blog) return [];
+    
+    const images = [
+      blog.hero_image,
+      blog.blog_image_one,
+      blog.blog_image_two,
+      blog.blog_image_three,
+      blog.annotation_image_one,
+      blog.annotation_image_two,
+      blog.annotation_image_three,
+      blog.annotation_image_four,
+      blog.annotation_image_five,
+      ...(blog.blog_images?.map((img) => img.image_url) || [])
+    ];
+
+    return images.filter((img): img is string => !!img);
+  };
+
+  const renderContentSection = (content?: string, className = '') => {
+    if (!content) return null;
+    
+    return (
+      <div 
+        className={`prose max-w-none mb-4 ${className}`}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  };
+
+  const renderKeyPoint = (
+    title?: string,
+    description?: string,
+    image?: string,
+    index: number = 0
+  ) => {
+    if (!title && !description) return null;
+
+    return (
+      <div key={index} className="mb-8">
+        {title && <h3 className="text-xl font-bold mb-2">{title}</h3>}
+        {description && renderContentSection(description)}
+        {image && (
+          <div className="mt-4 flex justify-center">
+            <img
+              src={image}
+              alt={title || `Blog image ${index}`}
+              className="max-h-96 object-contain rounded-lg border"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
           </div>
+        )}
+      </div>
+    );
+  };
 
-          <div className="flex flex-wrap gap-5 xl:gap-8 xl:mt-20 mt-9 justify-between">
-            {blog.map((item, index) => (
-              <div key={index} className="w-[full] lg:w-[31%] md:pb-2 md:w-[48%]">
-                <img 
-                  src={`/Images/${item.img}`} 
-                  className='w-full h-[180px] object-cover' 
-                  alt={item.head} 
-                />
-                <p className='font-montserratBold pt-2'>{item.head}</p>
-                <div className="flex gap-[4px]">
-                  <p className='font-montserrat text-sm'>{item.date}</p> | 
-                  <p className='font-montserrat text-sm'>{item.type}</p>
-                </div>
-                <p className='font-montserrat text-sm'>{item.des}</p>
-                <Link className='font-montserratBold text-[13px] text-buttons underline' to="#">
-                  Read more
-                </Link>
-              </div>
-            ))}
-          </div>
+  if (loading) {
+    return (
+      <div className="px-4 md:px-8 lg:px-16 py-12">
+        <Skeleton className="h-8 w-3/4 mb-6" />
+        <div className="grid gap-6">
+          <Skeleton className="h-64 w-full" />
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-4 w-full" />
+          ))}
         </div>
       </div>
-      <Fastdelivary />
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-4 md:px-8 lg:px-16 py-12">
+        <Alert variant="destructive">
+          <ExclamationTriangleIcon className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <div className="px-4 md:px-8 lg:px-16 py-12">
+        <Alert>
+          <AlertTitle>Not Found</AlertTitle>
+          <AlertDescription>The requested blog could not be found.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  const carouselImages = getCarouselImages();
+
+  return (
+    <div className="px-4 md:px-8 lg:px-16 py-8 max-w-6xl mx-auto">
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">{blog.title}</h1>
+      
+      {/* Carousel for images */}
+      {carouselImages.length > 0 ? (
+        <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
+          <Carousel 
+            showThumbs={false} 
+            infiniteLoop 
+            useKeyboardArrows 
+            autoPlay
+            showStatus={false}
+            showArrows={carouselImages.length > 1}
+            showIndicators={carouselImages.length > 1}
+          >
+            {carouselImages.map((img, index) => (
+              <div key={index} className="h-[400px] md:h-[500px] relative">
+                <img 
+                  src={img} 
+                  alt={`Blog image ${index + 1}`}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/placeholder-blog.jpg';
+                  }}
+                />
+              </div>
+            ))}
+          </Carousel>
+        </div>
+      ) : (
+        <div className="mb-8 h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+          No images available
+        </div>
+      )}
+
+      {/* Blog content sections */}
+      <div className="prose max-w-none">
+        {blog.epigraph && (
+          <blockquote className="text-xl italic border-l-4 pl-4 mb-6 text-gray-600">
+            {blog.epigraph}
+          </blockquote>
+        )}
+
+        {renderContentSection(blog.first_paragraph)}
+        {renderContentSection(blog.second_paragraph)}
+        {renderContentSection(blog.third_paragraph)}
+        {renderContentSection(blog.fourth_paragraph)}
+        {renderContentSection(blog.fifth_paragraph)}
+
+        {/* Key points section */}
+        <div className="mt-8 space-y-8">
+          {renderKeyPoint(
+            blog.point_one_title,
+            blog.point_one_description,
+            blog.annotation_image_one,
+            1
+          )}
+          {renderKeyPoint(
+            blog.point_two_title,
+            blog.point_two_description,
+            blog.annotation_image_two,
+            2
+          )}
+          {renderKeyPoint(
+            blog.point_three_title,
+            blog.point_three_description,
+            blog.annotation_image_three,
+            3
+          )}
+          {renderKeyPoint(
+            blog.point_four_title,
+            blog.point_four_description,
+            blog.annotation_image_four,
+            4
+          )}
+          {renderKeyPoint(
+            blog.point_five_title,
+            blog.point_five_description,
+            blog.annotation_image_five,
+            5
+          )}
+        </div>
+      </div>
+
+      {/* Blog metadata */}
+      <div className="mt-12 pt-6 border-t">
+        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+          {blog.created_at && (
+            <div>
+              <span className="font-medium">Published: </span>
+              {new Date(blog.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+          )}
+          {blog.categories && (
+            <div>
+              <span className="font-medium">Categories: </span>
+              {blog.categories}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Blog;
+
+
+
+// import { useState, useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import { GetBlogById } from '@/api';
+
+// interface BlogData {
+//   id: number;
+//   title: string;
+//   description: string;
+//   content: string;
+//   image_url: string | null;
+//   created_at: string;
+//   hero_image: string | null;
+//   blog_image_one: string | null;
+//   blog_image_two: string | null;
+//   blog_image_three: string | null;
+//   author_avatar: string | null;
+//   epigraph: string | null;
+//   first_paragraph: string | null;
+//   second_paragraph: string | null;
+//   third_paragraph: string | null;
+//   fourth_paragraph: string | null;
+//   fifth_paragraph: string | null;
+//   annotation_image_one: string | null;
+//   annotation_image_two: string | null;
+//   annotation_image_three: string | null;
+//   annotation_image_four: string | null;
+//   annotation_image_five: string | null;
+//   point_one_title: string | null;
+//   point_one_description: string | null;
+//   point_two_title: string | null;
+//   point_two_description: string | null;
+//   point_three_title: string | null;
+//   point_three_description: string | null;
+//   point_four_title: string | null;
+//   point_four_description: string | null;
+//   point_five_title: string | null;
+//   point_five_description: string | null;
+//   categories: string | null;
+//   meta_og_title: string | null;
+//   blog_images: Array<{
+//     id: number;
+//     blog_id: number;
+//     image_url: string;
+//   }>;
+// }
+
+// const Blog = () => {
+//   const { id } = useParams<{ id: string }>();
+//   const [blog, setBlog] = useState<BlogData | null>(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+//   useEffect(() => {
+//     const fetchBlog = async () => {
+//       if (!id) return;
+      
+//       try {
+//         setLoading(true);
+//         const response = await GetBlogById(id);
+//         setBlog(response);
+//       } catch (err) {
+//         setError('Failed to load blog');
+//         console.error('Error fetching blog:', err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchBlog();
+//   }, [id]);
+
+//   if (loading) {
+//     return <div className="flex items-center justify-center py-[50px]">Loading blog...</div>;
+//   }
+
+//   if (error) {
+//     return <div className="flex items-center justify-center py-[50px] text-red-500">{error}</div>;
+//   }
+
+//   if (!blog) {
+//     return <div className="flex items-center justify-center py-[50px]">Blog not found.</div>;
+//   }
+
+//   // Prepare carousel images
+//   const carouselImages = [
+//     blog.annotation_image_one,
+//     blog.annotation_image_two, 
+//     blog.annotation_image_three,
+//     blog.annotation_image_four,
+//     blog.annotation_image_five
+//   ].filter(img => img !== null) as string[];
+
+//   // Prepare points data
+//   const points = [
+//     { title: blog.point_one_title, description: blog.point_one_description },
+//     { title: blog.point_two_title, description: blog.point_two_description },
+//     { title: blog.point_three_title, description: blog.point_three_description },
+//     { title: blog.point_four_title, description: blog.point_four_description },
+//     { title: blog.point_five_title, description: blog.point_five_description }
+//   ].filter(point => point.title && point.description);
+
+//   // Prepare blog side data
+//   const blogSideData = blog.blog_images?.map((img, index) => ({
+//     img: img.image_url,
+//     head: blog.title || 'No Title',
+//     date: new Date(blog.created_at).toLocaleDateString(),
+//     type: blog.categories || 'Uncategorized',
+//     des: blog.meta_og_title ? 
+//       (blog.meta_og_title.length > 90 ? blog.meta_og_title.substring(0, 90) + '...' : blog.meta_og_title) 
+//       : 'No description available'
+//   })) || [];
+
+//   const formatDate = (dateString: string) => {
+//     return new Date(dateString).toLocaleDateString('en-US', {
+//       year: 'numeric',
+//       month: 'long', 
+//       day: 'numeric'
+//     });
+//   };
+
+//   return (
+//     <div className="py-[50px] px-[20px] md:px-[40px] lg:px-[80px] xl:px-[100px]">
+//       {/* Hero Section */}
+//       <div className="mb-8">
+//         <h1 className="text-3xl md:text-4xl font-montserratBold mb-4">{blog.title}</h1>
+//         <p className="text-gray-600 mb-2">{formatDate(blog.created_at)} | {blog.categories}</p>
+//         {blog.epigraph && (
+//           <p className="italic text-lg text-gray-700 mb-6">"{blog.epigraph}"</p>
+//         )}
+//         {blog.hero_image && (
+//           <img 
+//             src={blog.hero_image} 
+//             alt={blog.title}
+//             className="w-full h-[400px] object-cover rounded-lg mb-6"
+//             onError={(e) => {
+//               e.currentTarget.src = '/placeholder-image.jpg';
+//             }}
+//           />
+//         )}
+//       </div>
+
+//       <div className="flex flex-col lg:flex-row gap-8">
+//         {/* Main Content */}
+//         <div className="flex-1">
+//           {/* Carousel Section */}
+//           {carouselImages.length > 0 && (
+//             <div className="mb-8">
+//               <div className="relative">
+//                 <img 
+//                   src={carouselImages[currentImageIndex]}
+//                   alt={`Carousel ${currentImageIndex + 1}`}
+//                   className="w-full h-[300px] object-cover rounded-lg"
+//                   onError={(e) => {
+//                     e.currentTarget.src = '/placeholder-image.jpg';
+//                   }}
+//                 />
+//                 {carouselImages.length > 1 && (
+//                   <div className="flex justify-center mt-4 gap-2">
+//                     {carouselImages.map((_, index) => (
+//                       <button
+//                         key={index}
+//                         onClick={() => setCurrentImageIndex(index)}
+//                         className={`w-3 h-3 rounded-full ${
+//                           currentImageIndex === index ? 'bg-blue-600' : 'bg-gray-300'
+//                         }`}
+//                       />
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+//           )}
+
+//           {/* Points Section */}
+//           {points.length > 0 && (
+//             <div className="mb-8">
+//               <h2 className="text-2xl font-montserratBold mb-6">Key Points</h2>
+//               <div className="space-y-6">
+//                 {points.map((point, index) => (
+//                   <div key={index} className="border-l-4 border-blue-600 pl-6">
+//                     <h3 className="text-xl font-montserratBold mb-2">{point.title}</h3>
+//                     <p className="text-gray-700 font-montserrat">{point.description}</p>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           )}
+
+//           {/* Content Paragraphs */}
+//           <div className="prose max-w-none">
+//             {blog.first_paragraph && (
+//               <p className="mb-4 font-montserrat">{blog.first_paragraph}</p>
+//             )}
+//             {blog.second_paragraph && (
+//               <p className="mb-4 font-montserrat">{blog.second_paragraph}</p>
+//             )}
+//             {blog.third_paragraph && (
+//               <p className="mb-4 font-montserrat">{blog.third_paragraph}</p>
+//             )}
+//             {blog.fourth_paragraph && (
+//               <p className="mb-4 font-montserrat">{blog.fourth_paragraph}</p>
+//             )}
+//             {blog.fifth_paragraph && (
+//               <p className="mb-4 font-montserrat">{blog.fifth_paragraph}</p>
+//             )}
+//             {blog.content && (
+//               <p className="mb-4 font-montserrat">{blog.content}</p>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Sidebar */}
+//         {blogSideData.length > 0 && (
+//           <div className="flex w-full lg:w-[38%] mt-8 lg:mt-0">
+//             <div className="flex w-full gap-4 justify-between flex-col">
+//               {blogSideData.map((item, index) => (
+//                 <div key={index} className="flex gap-4 justify-between items-center">
+//                   <img 
+//                     src={item.img} 
+//                     className='h-[120px] lg:h-[98px] object-cover w-[80px] md:w-[200px]' 
+//                     alt={item.head}
+//                     onError={(e) => {
+//                       e.currentTarget.src = '/placeholder-image.jpg';
+//                     }}
+//                   />
+//                   <div className="">
+//                     <p className='font-montserratBold'>{item.head}</p>
+//                     <div className="flex gap-[4px]">
+//                       <p className='font-montserrat text-sm'>{item.date}</p> | 
+//                       <p className='font-montserrat text-sm'>{item.type}</p>
+//                     </div>
+//                     <p className='font-montserrat text-sm'>{item.des}</p>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Blog;

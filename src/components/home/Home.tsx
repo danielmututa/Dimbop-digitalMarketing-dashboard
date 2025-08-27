@@ -163,7 +163,7 @@ import Newproducts from './Newproducts'
 import News from './News'
 import Topsellingproducts from './Topsellingproducts'
 import Fastdelivary from './Fastdelivary'
-// import Blogs from './Blogs'
+import Blogs from './Blogs'
 import Testmonials from '../testimonials/Testmonials'
 
 interface BannerCard {
@@ -305,7 +305,7 @@ const Home = () => {
        <News /> 
       <Topsellingproducts />
       <Fastdelivary />
-       {/* <Blogs /> */}
+       <Blogs />
       <Testmonials />    
     </div>
   )
