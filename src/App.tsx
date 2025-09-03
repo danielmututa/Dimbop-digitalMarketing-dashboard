@@ -22,6 +22,10 @@ import Blog from "./components/blogs/Blog";
 import Blogarticle from "./components/blogs/Blogarticle";
 import CartItems from "./components/shop/Cartitems"; // Ensure this is the correct path
 import PaymentForm from "./components/payments/PaymentForm";
+// import Aichart from "./components/AiandDatabase/Aichart";
+import AIChartbot from "./components/AiandDatabase/Chartbot"
+
+
 
 // Lazy pages
 const HomePage = lazy(() => import('./pages/Home'));
@@ -66,6 +70,23 @@ function App() {
               </>
             }
           />
+
+
+          <Route
+            path="/search"
+            element={
+              <>
+                <Navbar />
+                <MediaNavbar />
+                < AIChartbot />
+                <Footer />
+              </>
+            }
+          />
+
+
+
+
           <Route
             path="/blog"
             element={

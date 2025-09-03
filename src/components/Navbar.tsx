@@ -479,7 +479,10 @@ const Navbar = () => {
 
       {/* Icons */}
       <div className="flex justify-between items-center gap-8">
-        <Search size={18} className='text-white hover:text-buttons font-extrabold'/>
+        <Link to="/search">
+        
+        <Search  size={18} className='text-white hover:text-buttons font-extrabold'/>
+        </Link>
         <User size={18} className='text-white hover:text-buttons font-extrabold'/>
         <Link to="/cart" className="flex items-center gap-2">
           <ShoppingCart size={18} className="text-white hover:text-buttons font-extrabold" />

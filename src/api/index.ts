@@ -3,3 +3,4 @@ export * from "./reviewApi";
 export * from "./productApi";
 export * from "./blogApi";
 export * from "./cartApi";
+export * from "./aichartApi";
