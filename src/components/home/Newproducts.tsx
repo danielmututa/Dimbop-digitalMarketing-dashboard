@@ -1256,7 +1256,7 @@ import { useCart } from "../shop/CartContext"
 import { useNavigate } from "react-router-dom"
 import { Star, Plus, ShoppingCart, Heart, X, Check, ChevronRight, Minus } from "lucide-react"
 import { apiClient } from "@/context/axios"
-import type { Toast } from "@/components/ui/toast"
+
 
 interface Product {
   id: number
@@ -1707,6 +1707,53 @@ const NewProducts = () => {
                         : "Out of stock"}
                     </p>
                   </div>
+                  <div className="flex items-center justify-between pt-4">
+
+                    <div className="flex items-center gap-4">
+                      <span className="font-montserratBold text-gray-800">Quantity:</span>
+                      <div className="flex items-center border rounded-lg border-gray-200">
+                        <button onClick={decrementQuantity} className="p-3 hover:bg-gray-100 transition-colors">
+                          <Minus size={16} />
+                        </button>
+                        <span className="px-4 py-2 border-x border-gray-200 min-w-[50px] text-center text-sm">
+                          {quantity}
+                        </span>
+                        <button onClick={incrementQuantity} className="p-3 hover:bg-gray-100 transition-colors">
+                          <Plus size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xl lg:text-2xl font-montserratBold text-blue-500">
+                        ${calculateTotalPrice(selectedProduct.price, quantity)}
+                      </span>
+                      {quantity > 1 && (
+                        <p className="text-sm text-gray-500">
+                          ${Number.parseFloat(selectedProduct.price).toFixed(2)} each
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-6">
+                    <button
+                      onClick={handleAddToCartFromDialog}
+                      disabled={selectedProduct.stock_quantity <= 0 || addingToCart === selectedProduct.id}
+                      className={`flex-1 py-3 px-6 rounded-lg font-montserratBold transition-colors ${
+                        selectedProduct.stock_quantity <= 0
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : addingToCart === selectedProduct.id
+                            ? "bg-blue-400 text-white cursor-wait"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                      }`}
+                    >
+                      {addingToCart === selectedProduct.id ? "Adding..." : "Add to Cart"}
+                    </button>
+                    <button className="flex-1 bg-gray-800 text-white py-3 px-6 rounded-lg font-montserratBold hover:bg-gray-700 transition-colors">
+                      Buy Now
+                    </button>
+                  </div>
+
 
                   <div className="space-y-4 border-t pt-4">
                     <div className="flex items-center justify-between">
@@ -1735,50 +1782,6 @@ const NewProducts = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4">
-                    <div className="flex items-center gap-4">
-                      <span className="font-montserratBold text-gray-800">Quantity:</span>
-                      <div className="flex items-center border rounded-lg border-gray-200">
-                        <button onClick={decrementQuantity} className="p-3 hover:bg-gray-100 transition-colors">
-                          <Minus size={16} />
-                        </button>
-                        <span className="px-4 py-2 border-x border-gray-200 min-w-[50px] text-center text-sm">
-                          {quantity}
-                        </span>
-                        <button onClick={incrementQuantity} className="p-3 hover:bg-gray-100 transition-colors">
-                          <Plus size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xl lg:text-2xl font-montserratBold text-blue-500">
-                        ${calculateTotalPrice(selectedProduct.price, quantity)}
-                      </span>
-                      {quantity > 1 && (
-                        <p className="text-sm text-gray-500">
-                          ${Number.parseFloat(selectedProduct.price).toFixed(2)} each
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-3 pt-6">
-                    <button
-                      onClick={handleAddToCartFromDialog}
-                      disabled={selectedProduct.stock_quantity <= 0 || addingToCart === selectedProduct.id}
-                      className={`flex-1 py-3 px-6 rounded-lg font-montserratBold transition-colors ${
-                        selectedProduct.stock_quantity <= 0
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : addingToCart === selectedProduct.id
-                            ? "bg-blue-400 text-white cursor-wait"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
-                      }`}
-                    >
-                      {addingToCart === selectedProduct.id ? "Adding..." : "Add to Cart"}
-                    </button>
-                    <button className="flex-1 bg-gray-800 text-white py-3 px-6 rounded-lg font-montserratBold hover:bg-gray-700 transition-colors">
-                      Buy Now
-                    </button>
-                  </div>
                 </div>
               </div>
               <div className="lg:w-1/2 p-6 lg:p-8">
