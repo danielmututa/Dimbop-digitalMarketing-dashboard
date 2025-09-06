@@ -126,6 +126,13 @@ const Account = () => {
               <p className="text-sm md:text-[16px]">{user.role || "Admin"}</p>
             </SheetDescription>
 
+              
+              <SheetDescription className="flex pt-3 justify-between w-full">
+  <p className="text-sm md:text-[16px]">Phone</p>
+  <p className="text-sm md:text-[16px]">{user.phone || "Not provided"}</p>
+</SheetDescription>
+
+
             <div className="w-full border"></div>
 
             <form className="pt-2 w-full">

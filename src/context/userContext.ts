@@ -46,6 +46,7 @@ interface AuthActions {
   register: (userData: {
     username: string;
     email: string;
+    phone: string;
     password: string;
     confirmpassword: string;
     role: string;
@@ -147,6 +148,7 @@ register: async (userData) => {
   const apiData = {
     username: userData.username,
     email: userData.email,
+    phone: userData.phone, // Add this line
     password: userData.password,
     confirmPassword: userData.confirmpassword,
     role: 'admin',

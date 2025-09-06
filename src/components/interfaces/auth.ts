@@ -4,12 +4,14 @@ export interface User
     id: number;
     username: string;
     email: string;
+     phone: string;
     role: 'user' | 'admin'; 
   }
 
   export interface RegisterAdmin{
     username: string;
     email: string;
+    phone: string;
     role: 'user' | 'admin'; 
     password: string;
     confirmPassword: string;

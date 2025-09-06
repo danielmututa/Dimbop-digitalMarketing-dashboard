@@ -12,6 +12,7 @@ import { toast, Toaster } from "sonner"
 interface RegisterFormData {
   username: string
   email: string
+  phone: string
   password: string
   confirmPassword: string
 }
@@ -48,6 +49,7 @@ const Register = () => {
       await authRegister({
         username: data.username,
         email: data.email,
+        phone: data.phone,
         password: data.password,
         confirmpassword: data.confirmPassword,
         role: "admin",
@@ -121,6 +123,25 @@ const Register = () => {
                 />
                 {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
               </div>
+
+
+                 <div className="flex items-start flex-col gap-1">
+  <label className="text-sm font-medium">Phone Number (Zimbabwe)</label>
+  <Input
+    {...register("phone", {
+      required: "Zimbabwean phone number is required",
+      pattern: {
+        value: /^(\+263|263|0)(7[7-8|1|3]|7[0-9])\d{7}$/,
+        message: "Please enter a valid Zimbabwean phone number (e.g., +263771234567, 0771234567)",
+      },
+    })}
+    className="italic"
+    placeholder="+263771234567 or 0771234567"
+  />
+  {errors.phone && <span className="text-red-500 text-xs">{errors.phone.message}</span>}
+</div>
+
+
 
               <div className="flex items-start flex-col gap-1">
                 <label className="text-sm font-medium">Password</label>
