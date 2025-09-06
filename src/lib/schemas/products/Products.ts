@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ReviewSchema } from "../feedback/feedback";
+import { reviewSchema, reviewLikeSchema,reviewCommentSchema,productViewSchema} from "../feedback/feedback";
 import { CartItemSchema } from "../cartitems/cartitems";
 
 export const ProductSchema = z.object({
@@ -21,7 +21,10 @@ export const ProductSchema = z.object({
       name: z.string(),
     })
     .nullable(), // Kept nullable to match backend response structure
-  reviews: z.array(ReviewSchema),
+  reviews: z.array(reviewSchema),
+  review_likes: z.array(reviewLikeSchema),
+  review_comments: z.array(reviewCommentSchema ),
+   product_views: z.array(productViewSchema ),
   cart: z.array(CartItemSchema),
   order_items: z.array(z.any()),
 });

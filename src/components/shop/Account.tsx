@@ -1209,7 +1209,7 @@ const Account: React.FC = () => {
           <div className="w-full flex justify-between">
             <div className="relative w-[47%]">
               <img src={aimg} className='w-full h-[200px] object-cover' alt="Discount offer" />
-              <Link className="absolute bg-blue-50/20 top-0 flex flex-col justify-center pl-2 md:pl-8 w-full h-full">
+              <Link to='/home' className="absolute bg-blue-50/20 top-0 flex flex-col justify-center pl-2 md:pl-8 w-full h-full">
                 <p className='font-montserratBold text-[18px]'>Purchase up to</p>
                 <p className='font-montserrat text-[40px]'>60%</p>
                 <p className='font-montserratBold text-[14px]'>to get <Link to="#">Nokia S16</Link></p>
@@ -1217,7 +1217,7 @@ const Account: React.FC = () => {
             </div>
             <div className="relative w-[47%]">
               <img src={aimg2} className='w-full h-[200px] object-cover' alt="Discount offer" />
-              <Link className="absolute bg-blue-50/20 top-0 flex flex-col justify-center pl-2 md:pl-8 w-full h-full">
+              <Link to='/home' className="absolute bg-blue-50/20 top-0 flex flex-col justify-center pl-2 md:pl-8 w-full h-full">
                 <p className='font-montserratBold text-[18px]'>Purchase up to</p>
                 <p className='font-montserrat text-[40px]'>90%</p>
                 <p className='font-montserratBold text-[14px]'>to get <Link to="#">Iphone 13 pro max</Link></p>

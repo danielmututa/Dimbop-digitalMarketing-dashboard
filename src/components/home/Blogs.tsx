@@ -78,7 +78,6 @@
 import { ArrowRight } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { apiClient } from '@/context/axios';
 import { GetBlogs } from '@/api';
 
 interface BlogCard {

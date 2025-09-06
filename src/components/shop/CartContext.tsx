@@ -1221,26 +1221,78 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     fetchCart();
   }, [user, token]);
 
-  const addToCart = async (productId: number, quantity: number) => {
-    if (!user?.id) {
-      const errorMsg = "User not logged in";
-      setError(errorMsg);
-      return { success: false, error: errorMsg };
-    }
+  // const addToCart = async (productId: number, quantity: number) => {
+  //   if (!user?.id) {
+  //     const errorMsg = "User not logged in";
+  //     setError(errorMsg);
+  //     return { success: false, error: errorMsg };
+  //   }
 
-    try {
-      const result = await AddToCart(user.id, productId, quantity);
-      console.log("Cart updated:", result);
+  //   try {
+  //     const result = await AddToCart(user.id, productId, quantity);
+  //     console.log("Cart updated:", result);
       
-      await fetchCart(); // Refresh cart data
-      return { success: true };
-    } catch (error: any) {
-      console.error("Error adding to cart:", error);
-      const errorMsg = error.response?.data?.error || error.message || "Failed to add to cart";
-      setError(errorMsg);
-      return { success: false, error: errorMsg };
-    }
-  };
+  //     await fetchCart(); // Refresh cart data
+  //     return { success: true };
+  //   } catch (error: any) {
+  //     console.error("Error adding to cart:", error);
+  //     const errorMsg = error.response?.data?.error || error.message || "Failed to add to cart";
+  //     setError(errorMsg);
+  //     return { success: false, error: errorMsg };
+  //   }
+  // };
+
+
+// const addToCart = async (productId: number, quantity?: number, price?: string) => {
+//   if (!user?.id) {
+//     const errorMsg = "User not logged in";
+//     setError(errorMsg);
+//     return { success: false, error: errorMsg };
+//   }
+
+//   try {
+//     // Use the provided quantity or default to 1
+//     const finalQuantity = quantity || 1;
+    
+//     // If you want to use the price parameter in your API call:
+//     const result = await AddToCart(user.id, productId, finalQuantity, price);
+//     console.log("Cart updated:", result);
+    
+//     await fetchCart(); // Refresh cart data
+//     return { success: true };
+//   } catch (error: any) {
+//     console.error("Error adding to cart:", error);
+//     const errorMsg = error.response?.data?.error || error.message || "Failed to add to cart";
+//     setError(errorMsg);
+//     return { success: false, error: errorMsg };
+//   }
+// };
+
+
+const addToCart = async (productId: number, quantity?: number, _price?: string) => {
+  if (!user?.id) {
+    const errorMsg = "User not logged in";
+    setError(errorMsg);
+    return { success: false, error: errorMsg };
+  }
+
+  try {
+    // Use the provided quantity or default to 1
+    const finalQuantity = quantity || 1;
+    
+    const result = await AddToCart(user.id, productId, finalQuantity);
+    console.log("Cart updated:", result);
+    
+    await fetchCart(); // Refresh cart data
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error adding to cart:", error);
+    const errorMsg = error.response?.data?.error || error.message || "Failed to add to cart";
+    setError(errorMsg);
+    return { success: false, error: errorMsg };
+  }
+};
+
 
   const removeFromCart = async (cartItemId: number) => {
     if (!user?.id || !token) {

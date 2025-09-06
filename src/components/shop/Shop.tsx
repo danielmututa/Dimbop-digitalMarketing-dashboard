@@ -1445,8 +1445,8 @@ const Shop: React.FC = () => {
   };
 
   // Star rating renderer
-  const renderStars = (rating: number): JSX.Element[] => {
-    const stars: JSX.Element[] = [];
+  const renderStars = (rating: number): React.ReactElement[] => {
+    const stars: React.ReactElement[] = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
 

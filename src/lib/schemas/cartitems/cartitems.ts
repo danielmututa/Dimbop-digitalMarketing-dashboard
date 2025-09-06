@@ -22,7 +22,7 @@
 
 
 
-src/lib/schemas/cartitems/cartitems.ts
+
 import { z } from "zod";
 
 export const CartItemSchema = z.object({

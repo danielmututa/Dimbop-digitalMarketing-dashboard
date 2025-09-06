@@ -3,7 +3,7 @@
 
 
 import { useState, useEffect } from 'react';
-import { Check, X, ShoppingCart } from 'lucide-react';
+import { X, ShoppingCart } from 'lucide-react';
 import Fastdelivary from '../home/Fastdelivary';
 import { useCart } from '../shop/CartContext';
 import { toast } from 'sonner';
@@ -52,15 +52,24 @@ const Wishlist = () => {
       return;
     }
 
-    addToCart({
-      id: product.id.toString(),
-      name: product.name,
-      type: product.categories?.name || 'No Category',
-      price: parseFloat(product.price),
-      image_url: product.image_url,
-      stock_quantity: product.stock_quantity,
-      availability: product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock'
-    }, 1);
+    // addToCart({
+    //   id: product.id.toString(),
+    //   name: product.name,
+    //   type: product.categories?.name || 'No Category',
+    //   price: parseFloat(product.price),
+    //   image_url: product.image_url,
+    //   stock_quantity: product.stock_quantity,
+    //   availability: product.stock_quantity > 0 ? 'In Stock' : 'Out of Stock'
+    // }, 1);
+
+
+// Replace the current addToCart call with:
+// Replace the parseInt line with:
+addToCart(
+  typeof product.id === 'string' ? parseInt(product.id) : product.id,
+  1,
+  product.price.toString()
+);
 
     toast.success('Added to cart');
   };

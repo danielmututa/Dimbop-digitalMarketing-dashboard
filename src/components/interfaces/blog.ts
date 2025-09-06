@@ -50,6 +50,7 @@ export interface BlogPostSM {
   meta_author?: string;
   meta_og_title?: string;
   meta_og_url?: string;
+  created_at?: string; 
   meta_og_image?: string;
   meta_site_name?: string;
   meta_post_twitter?: string;

@@ -42,7 +42,7 @@ const DebugCart = () => {
       <h3 className="text-lg font-bold mb-4">Cart Debug Tool</h3>
       
       <div className="mb-4">
-        <p><strong>Current User:</strong> {user ? `ID: ${user.id}, Name: ${user.name}` : 'Not logged in'}</p>
+       <p><strong>Current User:</strong> {user ? `ID: ${user.id}, Name: ${user.username}` : 'Not logged in'}</p>
       </div>
 
       <div className="space-x-2 mb-4">
