@@ -399,6 +399,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search, ShoppingCart, User } from 'lucide-react';
 import { NavLink, Link } from 'react-router-dom';
+import Account from '@/Account/Account';
 import { useCart } from './shop/CartContext'; // Import useCart
 
 const Navbar = () => {
@@ -483,7 +484,10 @@ const Navbar = () => {
         
         <Search  size={18} className='text-white hover:text-buttons font-extrabold'/>
         </Link>
-        <User size={18} className='text-white hover:text-buttons font-extrabold'/>
+
+
+        <Account />
+        {/* <User size={18} className='text-white hover:text-buttons font-extrabold'/> */}
         <Link to="/cart" className="flex items-center gap-2">
           <ShoppingCart size={18} className="text-white hover:text-buttons font-extrabold" />
           <span className="text-white text-sm font-montserrat">{cart?.length ?? 0}</span> {/* Safe access */}

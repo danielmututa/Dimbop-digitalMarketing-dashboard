@@ -151,7 +151,7 @@ register: async (userData) => {
     phone: userData.phone, // Add this line
     password: userData.password,
     confirmPassword: userData.confirmpassword,
-    role: 'admin',
+     role: userData.role, // Use the role from the parameter, not hardcoded
   };
 
   try {
@@ -199,6 +199,8 @@ register: async (userData) => {
     throw error;
   }
 },
+
+
   logout: () => {
     set({ user: null, token: null });
     deleteCookie('user');
