@@ -101,7 +101,7 @@ initializeAuth: () => {
   set({ isLoading: true, error: null });
   try {
     // const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimbopbakedfiles.onrender.com';
     const response = await fetch(`${baseURL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -156,7 +156,7 @@ register: async (userData) => {
 
   try {
     // const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
-    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://dimbopbakedfiles.onrender.com';
     const response = await fetch(`${baseURL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
