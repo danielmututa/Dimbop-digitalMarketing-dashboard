@@ -512,6 +512,9 @@ const MainSidebar = ({ children }: MainSidebarProps) => {
         </main>
       </div>
     </SidebarProvider>
+
+// fixed the indentation here ^
+
   );
 };
 
