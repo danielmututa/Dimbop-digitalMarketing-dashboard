@@ -1,6 +1,7 @@
-import Link from "next/link"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Link } from "react-router-dom"
 
 export function FinalCtaSection() {
   return (
@@ -19,7 +20,7 @@ export function FinalCtaSection() {
           </form>
           <p className="text-xs text-muted-foreground">
             By signing up, you agree to our{" "}
-            <Link href="#" className="underline underline-offset-2">
+            <Link to="/" className="underline underline-offset-2">
               Terms &amp; Conditions
             </Link>
           </p>

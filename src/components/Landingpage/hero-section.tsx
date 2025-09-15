@@ -1,5 +1,4 @@
-import Link from "next/link"
-import Image from "next/image"
+import {Link} from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Truck, Wallet, Headphones, Shield, RefreshCw } from "lucide-react"
 
@@ -21,20 +20,21 @@ export function HeroSection() {
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button asChild size="lg">
-                  <Link href="#shop">SHOP NOW</Link>
+                  <Link to= '/shop'>SHOP NOW</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
-                  <Link href="#features">Explore Features</Link>
+                  <Link to="/features">Explore Features</Link>
                 </Button>
               </div>
             </div>
-            <Image
-              src="/placeholder.svg?height=550&width=600"
-              width="600"
-              height="550"
-              alt="New Smartphone Models"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-            />
+           <img
+  src="/placeholder.svg?height=550&width=600"
+  width={600}
+  height={550}
+  alt="New Smartphone Models"
+  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+/>
+
           </div>
         </div>
       </section>

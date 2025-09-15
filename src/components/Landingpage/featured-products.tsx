@@ -1,11 +1,10 @@
-"use client"
+
 
 import { CardFooter } from "@/components/ui/card"
 import { toast } from "sonner"
 
 import React from "react"
 import useEmblaCarousel from "embla-carousel-react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Star, Heart, ShoppingCart, Eye, ChevronLeft, ChevronRight } from "lucide-react"
@@ -147,13 +146,13 @@ export function FeaturedProducts() {
                       </div>
                     )}
                     <CardContent className="p-4 flex flex-col items-center text-center flex-grow">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        width="150"
-                        height="150"
-                        alt={product.name}
-                        className="object-cover mb-4"
-                      />
+                     <img
+  src={product.image || "/placeholder.svg"}
+  width={150}
+  height={150}
+  alt={product.name}
+  className="object-cover mb-4"
+/>
                       <h3 className="font-semibold text-sm mb-1">{product.name}</h3>
                       <div className="flex items-center gap-1 text-yellow-500 text-xs mb-2">
                         {Array.from({ length: 5 }).map((_, i) => (
