@@ -18,7 +18,7 @@ const CartItems: React.FC = () => {
   const [isShippingOpen, setIsShippingOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dimpo-pbackend.onrender.com';
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://dimbopbakedfiles.onrender.com';
   const getImageUrl = (url: string) => url.startsWith('http') ? url : `${BASE_URL}${url}`;
 
   const shippingOptions: Record<string, ShippingOption> = {

@@ -305,7 +305,7 @@
 
 
 
-"use client"
+
 
 import type React from "react"
 
@@ -435,89 +435,181 @@ export function AIChat() {
     )
   }
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   if ((!input.trim() && attachments.length === 0) || isLoading) return
+
+  //   try {
+  //     setIsLoading(true)
+
+  //     // Process attachments and upload files
+  //     const messageAttachments = await Promise.all(
+  //       attachments.map(async (file) => {
+  //         const url = await uploadFile(file)
+  //         return {
+  //           type: file.type.startsWith("image/") ? ("image" as const) : ("audio" as const),
+  //           name: file.name,
+  //           url: url,
+  //         }
+  //       })
+  //     )
+
+  //     const userMessage: Message = {
+  //       id: Date.now(),
+  //       type: "user",
+  //       content: input.trim(),
+  //       timestamp: new Date(),
+  //       attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
+  //     }
+
+  //     setMessages((prev) => [...prev, userMessage])
+  //     const currentInput = input.trim()
+  //     setInput("")
+  //     setAttachments([])
+
+  //     // Create AI message placeholder
+  //     const aiMessageId = Date.now() + 1
+  //     const aiMessage: Message = {
+  //       id: aiMessageId,
+  //       type: "ai",
+  //       content: "",
+  //       timestamp: new Date(),
+  //       isStreaming: true,
+  //     }
+
+  //     setMessages((prev) => [...prev, aiMessage])
+
+  //     // Prepare API request data
+  //     const queryData: AIQueryType = {
+  //       query: currentInput || "Please analyze the uploaded file(s)",
+  //     }
+
+  //     // Add image URL if there's an image attachment
+  //     const imageAttachment = messageAttachments.find(att => att.type === "image")
+  //     if (imageAttachment) {
+  //       queryData.image_url = imageAttachment.url
+  //     }
+
+  //     // Add audio URL if there's an audio attachment
+  //     const audioAttachment = messageAttachments.find(att => att.type === "audio")
+  //     if (audioAttachment) {
+  //       queryData.audio_url = audioAttachment.url
+  //     }
+
+  //     // Make API call
+  //     const response = await aiQueryApi(queryData)
+
+  //     // Stream the response
+  //     streamText(response.message, aiMessageId)
+
+  //   } catch (error) {
+  //     console.error("AI Query Error:", error)
+      
+  //     // Handle error by updating the AI message
+  //     const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred"
+      
+  //     setMessages((prev) =>
+  //       prev.map((msg) =>
+  //         msg.id === Date.now() + 1 
+  //           ? { ...msg, content: `Sorry, I encountered an error: ${errorMessage}`, isStreaming: false }
+  //           : msg
+  //       )
+  //     )
+  //     setIsLoading(false)
+  //   }
+  // }
+
+
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if ((!input.trim() && attachments.length === 0) || isLoading) return
+  e.preventDefault()
+  if ((!input.trim() && attachments.length === 0) || isLoading) return
+
+  try {
+    setIsLoading(true)
+
+    // Process attachments and upload files
+    const messageAttachments = await Promise.all(
+      attachments.map(async (file) => {
+        const url = await uploadFile(file)
+        return {
+          type: file.type.startsWith("image/") ? ("image" as const) : ("audio" as const),
+          name: file.name,
+          url: url,
+        }
+      })
+    )
+
+    const userMessage: Message = {
+      id: Date.now(),
+      type: "user",
+      content: input.trim(),
+      timestamp: new Date(),
+      attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+    const currentInput = input.trim()
+    setInput("")
+    setAttachments([])
+
+    // Create AI message placeholder with stored ID
+    const aiMessageId = Date.now() + 1
+    const aiMessage: Message = {
+      id: aiMessageId,
+      type: "ai",
+      content: "",
+      timestamp: new Date(),
+      isStreaming: true,
+    }
+
+    setMessages((prev) => [...prev, aiMessage])
+
+    // Prepare API request data
+    const queryData: AIQueryType = {
+      query: currentInput || "Please analyze the uploaded file(s)",
+    }
+
+    // Add image/audio URLs if available
+    const imageAttachment = messageAttachments.find(att => att.type === "image")
+    if (imageAttachment) queryData.image_url = imageAttachment.url
+
+    const audioAttachment = messageAttachments.find(att => att.type === "audio")
+    if (audioAttachment) queryData.audio_url = audioAttachment.url
 
     try {
-      setIsLoading(true)
-
-      // Process attachments and upload files
-      const messageAttachments = await Promise.all(
-        attachments.map(async (file) => {
-          const url = await uploadFile(file)
-          return {
-            type: file.type.startsWith("image/") ? ("image" as const) : ("audio" as const),
-            name: file.name,
-            url: url,
-          }
-        })
-      )
-
-      const userMessage: Message = {
-        id: Date.now(),
-        type: "user",
-        content: input.trim(),
-        timestamp: new Date(),
-        attachments: messageAttachments.length > 0 ? messageAttachments : undefined,
-      }
-
-      setMessages((prev) => [...prev, userMessage])
-      const currentInput = input.trim()
-      setInput("")
-      setAttachments([])
-
-      // Create AI message placeholder
-      const aiMessageId = Date.now() + 1
-      const aiMessage: Message = {
-        id: aiMessageId,
-        type: "ai",
-        content: "",
-        timestamp: new Date(),
-        isStreaming: true,
-      }
-
-      setMessages((prev) => [...prev, aiMessage])
-
-      // Prepare API request data
-      const queryData: AIQueryType = {
-        query: currentInput || "Please analyze the uploaded file(s)",
-      }
-
-      // Add image URL if there's an image attachment
-      const imageAttachment = messageAttachments.find(att => att.type === "image")
-      if (imageAttachment) {
-        queryData.image_url = imageAttachment.url
-      }
-
-      // Add audio URL if there's an audio attachment
-      const audioAttachment = messageAttachments.find(att => att.type === "audio")
-      if (audioAttachment) {
-        queryData.audio_url = audioAttachment.url
-      }
-
       // Make API call
       const response = await aiQueryApi(queryData)
-
-      // Stream the response
+      // Stream the AI response
       streamText(response.message, aiMessageId)
-
     } catch (error) {
-      console.error("AI Query Error:", error)
-      
-      // Handle error by updating the AI message
+      console.error("AI API Error:", error)
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred"
-      
+
+      // Fix: use stored AI message ID
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === Date.now() + 1 
+          msg.id === aiMessageId
             ? { ...msg, content: `Sorry, I encountered an error: ${errorMessage}`, isStreaming: false }
             : msg
         )
       )
-      setIsLoading(false)
     }
+
+  } catch (error) {
+    console.error("AI Query Setup Error:", error)
+  } finally {
+    setIsLoading(false)
   }
+}
+
+
+
+
+
+
 
   return (
     <Card className="h-[600px] flex flex-col bg-card border-border">

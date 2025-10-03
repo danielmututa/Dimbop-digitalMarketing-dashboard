@@ -41,37 +41,6 @@ const Products: React.FC<ProductTableProps> = ({ onProductAction }) => {
     success: false,
   })
   const [categories, setCategories] = useState<Category[]>([])
-
-  // DEBUG FUNCTION - Check what your API is returning
-  // const debugAPI = async () => {
-  //   console.log("🔍 DEBUGGING API...")
-  //   toast.loading("Debugging API...")
-
-  //   try {
-  //     console.log("Testing apiClient with /api/products...")
-
-  //     const response = await apiClient({
-  //       url: "/api/products",
-  //       method: "GET",
-  //       headers: { "Content-Type": "application/json" },
-  //     })
-
-  //     console.log("API Response:", response.data)
-  //     toast.dismiss()
-  //     toast.success("✅ API is working!")
-
-  //     if (Array.isArray(response.data) && response.data.length > 0) {
-  //       console.log("Sample product structure:", response.data[0])
-  //     }
-  //   } catch (error) {
-  //     console.error("Debug error:", error)
-  //     toast.dismiss()
-  //     toast.error("❌ API connection failed!")
-  //     toast.error("Check if your backend is running")
-  //   }
-  // }
-
-  // FETCH categories using the same apiClient as ProductShowcase
   const fetchCategories = async () => {
     let loadingToastId: string | number | undefined
 

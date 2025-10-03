@@ -4568,8 +4568,17 @@ const NewProducts = () => {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState<boolean>(false)
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" })
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dimpo-pbackend.onrender.com"
-  const getImageUrl = (url: string) => (url.startsWith("http") ? url : `${BASE_URL}${url}`)
+  // const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://dimpo-pbackend.onrender.com"
+  // const getImageUrl = (url: string) => (url.startsWith("http") ? url : `${BASE_URL}${url}`)
+
+  const getImageUrl = (imageUrl: string) => {
+  if (!imageUrl) {
+    console.warn('No image_url provided, using placeholder');
+    return '/placeholder-image.jpg';
+  }
+  // Simply return the URL as-is - it's already a full Cloudinary URL
+  return imageUrl;
+};
 
   // Limit to 9 products
   const displayedProducts = products.slice(0, 9)
@@ -4841,7 +4850,7 @@ const NewProducts = () => {
           return (
             <div
               key={product.id}
-              className="mb-[20px] w-full sm:w-[48%] lg:w-[30%] xl:w-[23%] relative h-[400px] group"
+              className=" mb-[40px] md:mb-[50px] lg:mb-[60px] w-full sm:w-[48%] lg:w-[30%] xl:w-[23%] relative h-[400px] group"
             >
               <div className="relative w-full h-[300px] overflow-hidden">
                 <img
@@ -5095,6 +5104,7 @@ const NewProducts = () => {
               </div>
               <div className="lg:w-1/2 p-6 lg:p-8">
                 <div className="w-full h-[300px] lg:h-[500px] rounded-lg overflow-hidden">
+                  {/* hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh */}
                   <img
                     src={getImageUrl(selectedProduct.image_url) || "/placeholder.svg"}
                     alt={selectedProduct.name}
