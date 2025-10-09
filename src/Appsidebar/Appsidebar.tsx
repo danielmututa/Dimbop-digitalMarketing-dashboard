@@ -1,4 +1,3 @@
-// src/components/app-sidebar.tsx
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { Home, Settings } from "lucide-react";
 
@@ -20,3 +19,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+

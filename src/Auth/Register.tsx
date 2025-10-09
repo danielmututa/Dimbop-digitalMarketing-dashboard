@@ -208,15 +208,223 @@
 
 
 
-// src/Auth/Register.tsx (updated)
+// // src/Auth/Register.tsx (updated)
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+// import { useNavigate, useParams } from "react-router-dom"
+// import { useForm } from "react-hook-form"
+// import { useAuthStore } from "@/context/userContext"
+// import { useEffect } from "react"
+// import { toast, Toaster } from "sonner"
+
+// // Define the form data type
+// interface RegisterFormData {
+//   username: string
+//   email: string
+//   phone: string
+//   password: string
+//   confirmPassword: string
+// }
+
+// interface RegisterProps {
+//   role?: "user" | "admin";
+// }
+
+// const Register = ({ role }: RegisterProps) => {
+//   const navigate = useNavigate()
+//   const { register: authRegister, user } = useAuthStore()
+//   const { role: urlRole } = useParams<{ role: string }>()
+
+//   // Use prop first, then URL parameter, default to "user"
+//   const finalRole = role || (urlRole as "user" | "admin") || "user"
+
+//   const {
+//     register,
+//     handleSubmit,
+//     formState: { errors, isSubmitting },
+//     watch,
+//   } = useForm<RegisterFormData>()
+
+//   useEffect(() => {
+//     console.log("Register - Current user:", user)
+//   }, [user])
+
+//   const handleLoginRedirect = () => {
+//     navigate("/login")
+//   }
+
+//   const onSubmit = async (data: RegisterFormData) => {
+//       console.log("Registering with role:", finalRole); 
+//     console.log("Form submitted!")
+    
+//     let loadingToastId: string | number | undefined
+
+//     try {
+//       loadingToastId = toast.loading("Creating your account...")
+
+//       await authRegister({
+//         username: data.username,
+//         email: data.email,
+//         phone: data.phone,
+//         password: data.password,
+//         confirmpassword: data.confirmPassword,
+//         role: finalRole, 
+//       })
+
+//       toast.dismiss(loadingToastId)
+//       toast.success("✅ Account created successfully!")
+      
+//       // Redirect based on role
+//       if (finalRole === "admin") {
+//         navigate("/"); // Admin dashboard
+//       } else {
+//         navigate("/home"); // User homepage
+//       }
+//     } catch (error: unknown) {
+//       console.log("Registration error:", error)
+
+//       if (loadingToastId !== undefined) {
+//         toast.dismiss(loadingToastId)
+//       }
+
+//       toast.error("❌ Registration Failed!")
+//       const errorMessage = error instanceof Error ? error.message : "Something went wrong"
+//       toast.error(errorMessage)
+//     }
+//   }
+
+//   return (
+//     <>
+//       <Toaster position="top-right" richColors closeButton />
+
+//       <div className="w-full flex justify-center items-center min-h-screen p-4">
+//         <form onSubmit={handleSubmit(onSubmit)} className="w-full md:w-[60%] xl:w-[40%] max-w-md">
+//           <Card className="w-full">
+//             <CardHeader>
+//               <CardTitle>Register as {finalRole.toUpperCase()}</CardTitle>
+//               <CardDescription>Create your {finalRole} account</CardDescription>
+//             </CardHeader>
+//             <CardContent className="flex flex-col gap-4">
+//               {/* ... rest of your form fields remain the same ... */}
+//               <div className="flex items-start flex-col gap-1">
+//                 <label className="text-sm font-medium">Username</label>
+//                 <Input
+//                   {...register("username", {
+//                     required: "Username is required",
+//                     minLength: {
+//                       value: 3,
+//                       message: "Username must be at least 3 characters",
+//                     },
+//                   })}
+//                   className="italic"
+//                   placeholder="example Peter Parker"
+//                 />
+//                 {errors.username && <span className="text-red-500 text-xs">{errors.username.message}</span>}
+//               </div>
+
+//               <div className="flex items-start flex-col gap-1">
+//                 <label className="text-sm font-medium">Email</label>
+//                 <Input
+//                   {...register("email", {
+//                     required: "Email is required",
+//                     pattern: {
+//                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+//                       message: "Invalid email address",
+//                     },
+//                   })}
+//                   type="email"
+//                   className="italic"
+//                   placeholder="example parkerpeter@gmail.com"
+//                 />
+//                 {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
+//               </div>
+
+//               <div className="flex items-start flex-col gap-1">
+//                 <label className="text-sm font-medium">Phone Number (Zimbabwe)</label>
+//                 <Input
+//                   {...register("phone", {
+//                     required: "Zimbabwean phone number is required",
+//                     pattern: {
+//                       value: /^(\+263|263|0)(7[7-8|1|3]|7[0-9])\d{7}$/,
+//                       message: "Please enter a valid Zimbabwean phone number (e.g., +263771234567, 0771234567)",
+//                     },
+//                   })}
+//                   className="italic"
+//                   placeholder="+263771234567 or 0771234567"
+//                 />
+//                 {errors.phone && <span className="text-red-500 text-xs">{errors.phone.message}</span>}
+//               </div>
+
+//               <div className="flex items-start flex-col gap-1">
+//                 <label className="text-sm font-medium">Password</label>
+//                 <Input
+//                   {...register("password", {
+//                     required: "Password is required",
+//                     minLength: {
+//                       value: 6,
+//                       message: "Password must be at least 6 characters",
+//                     },
+//                   })}
+//                   type="password"
+//                   className="italic"
+//                   placeholder="example AJ!#04qp"
+//                 />
+//                 {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
+//               </div>
+
+//               <div className="flex items-start flex-col gap-1">
+//                 <label className="text-sm font-medium">Confirm Password</label>
+//                 <Input
+//                   {...register("confirmPassword", {
+//                     required: "Please confirm your password",
+//                     validate: (value) => value === watch("password") || "Passwords do not match",
+//                   })}
+//                   type="password"
+//                   className="italic"
+//                   placeholder="AJ!#04qp"
+//                 />
+//                 {errors.confirmPassword && (
+//                   <span className="text-red-500 text-xs">{errors.confirmPassword.message}</span>
+//                 )}
+//               </div>
+//             </CardContent>
+
+//             <CardFooter className="flex flex-col gap-4">
+//               <Button type="submit" disabled={isSubmitting} className="w-full">
+//                 {isSubmitting ? "Registering..." : `Register as ${finalRole}`}
+//               </Button>
+//               <div className="w-full flex justify-between items-center">
+//                 <p className="text-sm text-muted-foreground">Have an account?</p>
+//                 <Button onClick={handleLoginRedirect} variant="ghost" type="button" size="sm">
+//                   Login
+//                 </Button>
+//               </div>
+//             </CardFooter>
+//           </Card>
+//         </form>
+//       </div>
+//     </>
+//   )
+// }
+
+// export default Register
+
+
+
+
+
+
+// src/Auth/Register.tsx (with password visibility toggle)
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { useNavigate, useParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { useAuthStore } from "@/context/userContext"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { toast, Toaster } from "sonner"
+import { Eye, EyeOff } from "lucide-react"
 
 // Define the form data type
 interface RegisterFormData {
@@ -235,6 +443,10 @@ const Register = ({ role }: RegisterProps) => {
   const navigate = useNavigate()
   const { register: authRegister, user } = useAuthStore()
   const { role: urlRole } = useParams<{ role: string }>()
+
+  // Password visibility states
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // Use prop first, then URL parameter, default to "user"
   const finalRole = role || (urlRole as "user" | "admin") || "user"
@@ -255,7 +467,7 @@ const Register = ({ role }: RegisterProps) => {
   }
 
   const onSubmit = async (data: RegisterFormData) => {
-      console.log("Registering with role:", finalRole); 
+    console.log("Registering with role:", finalRole)
     console.log("Form submitted!")
     
     let loadingToastId: string | number | undefined
@@ -269,7 +481,7 @@ const Register = ({ role }: RegisterProps) => {
         phone: data.phone,
         password: data.password,
         confirmpassword: data.confirmPassword,
-        role: finalRole, 
+        role: finalRole,
       })
 
       toast.dismiss(loadingToastId)
@@ -277,9 +489,9 @@ const Register = ({ role }: RegisterProps) => {
       
       // Redirect based on role
       if (finalRole === "admin") {
-        navigate("/"); // Admin dashboard
+        navigate("/")
       } else {
-        navigate("/home"); // User homepage
+        navigate("/home")
       }
     } catch (error: unknown) {
       console.log("Registration error:", error)
@@ -306,7 +518,7 @@ const Register = ({ role }: RegisterProps) => {
               <CardDescription>Create your {finalRole} account</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {/* ... rest of your form fields remain the same ... */}
+              {/* Username Field */}
               <div className="flex items-start flex-col gap-1">
                 <label className="text-sm font-medium">Username</label>
                 <Input
@@ -316,6 +528,10 @@ const Register = ({ role }: RegisterProps) => {
                       value: 3,
                       message: "Username must be at least 3 characters",
                     },
+                    maxLength: {
+                      value: 100,
+                      message: "Username is too long",
+                    },
                   })}
                   className="italic"
                   placeholder="example Peter Parker"
@@ -323,6 +539,7 @@ const Register = ({ role }: RegisterProps) => {
                 {errors.username && <span className="text-red-500 text-xs">{errors.username.message}</span>}
               </div>
 
+              {/* Email Field */}
               <div className="flex items-start flex-col gap-1">
                 <label className="text-sm font-medium">Email</label>
                 <Input
@@ -340,14 +557,23 @@ const Register = ({ role }: RegisterProps) => {
                 {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
               </div>
 
+              {/* Phone Field - SIMPLIFIED */}
               <div className="flex items-start flex-col gap-1">
-                <label className="text-sm font-medium">Phone Number (Zimbabwe)</label>
+                <label className="text-sm font-medium">Phone Number</label>
                 <Input
                   {...register("phone", {
-                    required: "Zimbabwean phone number is required",
+                    required: "Phone number is required",
+                    minLength: {
+                      value: 9,
+                      message: "Phone number too short",
+                    },
+                    maxLength: {
+                      value: 15,
+                      message: "Phone number too long",
+                    },
                     pattern: {
-                      value: /^(\+263|263|0)(7[7-8|1|3]|7[0-9])\d{7}$/,
-                      message: "Please enter a valid Zimbabwean phone number (e.g., +263771234567, 0771234567)",
+                      value: /^(\+?263|0)?[1-9]\d{6,9}$/,
+                      message: "Please enter a valid phone number",
                     },
                   })}
                   className="italic"
@@ -356,34 +582,67 @@ const Register = ({ role }: RegisterProps) => {
                 {errors.phone && <span className="text-red-500 text-xs">{errors.phone.message}</span>}
               </div>
 
+              {/* Password Field - WITH EYE ICON */}
               <div className="flex items-start flex-col gap-1">
                 <label className="text-sm font-medium">Password</label>
-                <Input
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
-                  type="password"
-                  className="italic"
-                  placeholder="example AJ!#04qp"
-                />
+                <div className="relative w-full">
+                  <Input
+                    {...register("password", {
+                      required: "Password is required",
+                      minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters",
+                      },
+                      pattern: {
+                        value: /^(?=.*\d).{6,}$/,
+                        message: "Password must contain at least 1 number",
+                      },
+                    })}
+                    type={showPassword ? "text" : "password"}
+                    className="italic pr-10"
+                    placeholder="e.g., mypass123 or dann9od"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
                 {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
+                <p className="text-xs text-muted-foreground">At least 6 characters with 1 number</p>
               </div>
 
+              {/* Confirm Password Field - WITH EYE ICON */}
               <div className="flex items-start flex-col gap-1">
                 <label className="text-sm font-medium">Confirm Password</label>
-                <Input
-                  {...register("confirmPassword", {
-                    required: "Please confirm your password",
-                    validate: (value) => value === watch("password") || "Passwords do not match",
-                  })}
-                  type="password"
-                  className="italic"
-                  placeholder="AJ!#04qp"
-                />
+                <div className="relative w-full">
+                  <Input
+                    {...register("confirmPassword", {
+                      required: "Please confirm your password",
+                      validate: (value) => value === watch("password") || "Passwords do not match",
+                    })}
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="italic pr-10"
+                    placeholder="Retype your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <span className="text-red-500 text-xs">{errors.confirmPassword.message}</span>
                 )}
