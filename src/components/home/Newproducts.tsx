@@ -350,7 +350,7 @@ const NewProducts = () => {
                   loading="lazy"
                   src={getImageUrl(product.image_url) || "/placeholder.svg"}
                   alt={product.name}
-                  className="hover:scale-105 transition-transform duration-500 w-full object-contain xl:object-cover    h-full"
+                  className="hover:scale-105 transition-transform duration-500 w-full object-cover    h-full"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
                     target.src = "/placeholder-image.jpg"
