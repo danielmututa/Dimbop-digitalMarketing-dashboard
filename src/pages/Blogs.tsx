@@ -33,7 +33,7 @@ interface ImageFiles {
   annotation_image_four?: File;
   annotation_image_five?: File;
   meta_og_image?: File;
-  // blog_images: File[];
+  blog_images: File[];
 }
 
 const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
