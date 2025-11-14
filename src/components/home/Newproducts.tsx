@@ -345,12 +345,12 @@ const NewProducts = () => {
               key={product.id}
               className=" mb-[40px] md:mb-[50px] lg:mb-[60px] w-full sm:w-[48%] lg:w-[30%] xl:w-[23%] relative h-[400px] group"
             >
-              <div className="relative w-full h-[400px] xl:h-[300px] overflow-hidden">
+              <div className="relative w-full h-[300px]   overflow-hidden">
                 <img
                   loading="lazy"
                   src={getImageUrl(product.image_url) || "/placeholder.svg"}
                   alt={product.name}
-                  className="hover:scale-105 transition-transform duration-500 w-full object-cover h-full"
+                  className="hover:scale-105 transition-transform duration-500 w-full object-contain xl:object-cover    h-full"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
                     target.src = "/placeholder-image.jpg"
