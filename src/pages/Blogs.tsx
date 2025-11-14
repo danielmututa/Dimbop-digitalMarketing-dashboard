@@ -33,7 +33,7 @@ interface ImageFiles {
   annotation_image_four?: File;
   annotation_image_five?: File;
   meta_og_image?: File;
-  blog_images: File[];
+  // blog_images: File[];
 }
 
 const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
@@ -81,7 +81,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     meta_site_name: '',
     meta_post_twitter: '',
     status: 'visible',
-    blog_images: [],
+    // blog_images: [],
   });
   const [imageFiles, setImageFiles] = useState<ImageFiles>({ blog_images: [] });
   const [imagePreview, setImagePreview] = useState<Record<string, string>>({});
@@ -140,7 +140,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
       const newFiles = Array.from(files);
       setImageFiles((prev) => ({
         ...prev,
-        blog_images: [...prev.blog_images, ...newFiles],
+        // blog_images: [...prev.blog_images, ...newFiles],
       }));
       newFiles.forEach((file, index) => {
         const previewUrl = URL.createObjectURL(file);
@@ -163,134 +163,294 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitStatus({ loading: true, error: null, success: false });
+ 
+  //   e.preventDefault();
+  //   setSubmitStatus({ loading: true, error: null, success: false });
 
-    const requiredFields = ['title', 'description', 'content', 'categories', 'status'];
-    const missingFields = requiredFields.filter(
-      (field) => !formData[field as keyof typeof formData]?.toString().trim()
-    );
+  //   const requiredFields = ['title', 'description', 'content', 'categories', 'status'];
+  //   const missingFields = requiredFields.filter(
+  //     (field) => !formData[field as keyof typeof formData]?.toString().trim()
+  //   );
 
-    if (missingFields.length > 0) {
-      setSubmitStatus({
-        loading: false,
-        error: `Please fill in the following required fields: ${missingFields.join(', ')}`,
-        success: false,
-      });
-      return;
+  //   if (missingFields.length > 0) {
+  //     setSubmitStatus({
+  //       loading: false,
+  //       error: `Please fill in the following required fields: ${missingFields.join(', ')}`,
+  //       success: false,
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const formDataToSend = new FormData();
+
+  //     // Append text fields (exclude backend-generated fields)
+  //     Object.entries(formData).forEach(([key, value]) => {
+  //       if (
+  //         key !== 'blog_images' &&
+  //         key !== 'id' &&
+  //         key !== 'created_at' &&
+  //         key !== 'author_id' &&
+  //         key !== 'blog_type_id' &&
+  //         key !== 'meta_facebook_id' &&
+  //         value &&
+  //         value.toString().trim()
+  //       ) {
+  //         formDataToSend.append(key, value.toString());
+  //       }
+  //     });
+
+  //     // Append image files
+  //     Object.entries(imageFiles).forEach(([key, value]) => {
+  //       if (value && key !== 'blog_images') {
+  //         formDataToSend.append(key, value);
+  //       }
+  //     });
+
+  //     // Append blog_images array
+  //     imageFiles.blog_images.forEach((file, index) => {
+  //       formDataToSend.append(`blog_images[${index}]`, file);
+  //     });
+
+  //     // Debugging: Log FormData contents
+  //     console.log('FormData contents:');
+  //     for (const [key, value] of formDataToSend.entries()) {
+  //       console.log(`${key}: ${value}`);
+  //     }
+
+  //     const response = id
+  //       ? await UpdateBlog(id, formDataToSend)
+  //       : await CreateBlog(formDataToSend);
+
+  //     // Debugging: Log the API response
+  //     console.log('API Response:', response);
+
+  //     // Relaxed validation: Check if response exists and seems valid
+  //     if (!response || typeof response !== 'object') {
+  //       throw new Error('Invalid response from server: empty or malformed response');
+  //     }
+
+  //     setSubmitStatus({ loading: false, error: null, success: true });
+
+  //     // Reset form
+  //     setFormData({
+  //       title: '',
+  //       description: '',
+  //       content: '',
+  //       image_url: '',
+  //       hero_image: '',
+  //       blog_image_one: '',
+  //       blog_image_two: '',
+  //       blog_image_three: '',
+  //       author_avatar: '',
+  //       epigraph: '',
+  //       first_paragraph: '',
+  //       second_paragraph: '',
+  //       third_paragraph: '',
+  //       fourth_paragraph: '',
+  //       fifth_paragraph: '',
+  //       annotation_image_one: '',
+  //       annotation_image_two: '',
+  //       annotation_image_three: '',
+  //       annotation_image_four: '',
+  //       annotation_image_five: '',
+  //       point_one_title: '',
+  //       point_one_description: '',
+  //       point_two_title: '',
+  //       point_two_description: '',
+  //       point_three_title: '',
+  //       point_three_description: '',
+  //       point_four_title: '',
+  //       point_four_description: '',
+  //       point_five_title: '',
+  //       point_five_description: '',
+  //       categories: '',
+  //       more_blogs: '',
+  //       meta_description: '',
+  //       keywords: '',
+  //       meta_author: '',
+  //       meta_og_title: '',
+  //       meta_og_url: '',
+  //       meta_og_image: '',
+  //       meta_site_name: '',
+  //       meta_post_twitter: '',
+  //       status: 'visible',
+  //       blog_images: [],
+  //     });
+  //     setImageFiles({ blog_images: [] });
+  //     setImagePreview({});
+
+  //     if (onBlogAction) onBlogAction();
+  //     navigate('/');
+  //   } catch (error) {
+  //     console.error('Error submitting blog:', error);
+  //     setSubmitStatus({
+  //       loading: false,
+  //       error: error instanceof Error ? error.message : 'An error occurred while submitting',
+  //       success: false,
+  //     });
+  //   }
+  // };
+
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//   e.preventDefault();
+//   setSubmitStatus({ loading: true, error: null, success: false });
+
+//   const requiredFields = ['title', 'description', 'content', 'categories', 'status'];
+//   const missingFields = requiredFields.filter(
+//     (field) => !formData[field as keyof typeof formData]?.toString().trim()
+//   );
+
+//   if (missingFields.length > 0) {
+//     setSubmitStatus({
+//       loading: false,
+//       error: `Please fill in the following required fields: ${missingFields.join(', ')}`,
+//       success: false,
+//     });
+//     return;
+//   }
+
+//   try {
+//     const formDataToSend = new FormData();
+
+//     // ✅ FIXED: Only append if value exists AND is not empty
+//     Object.entries(formData).forEach(([key, value]) => {
+//       if (
+//         key !== 'blog_images' &&
+//         key !== 'id' &&
+//         key !== 'created_at' &&
+//         key !== 'author_id' &&
+//         key !== 'blog_type_id' &&
+//         key !== 'meta_facebook_id' &&
+//         value !== undefined &&
+//         value !== null &&
+//         value !== '' &&  // ✅ Add this check
+//         (typeof value === 'string' ? value.trim() !== '' : true)
+//       ) {
+//         formDataToSend.append(key, value.toString());
+//       }
+//     });
+
+//     // Append image files (only if they exist)
+//     Object.entries(imageFiles).forEach(([key, value]) => {
+//       if (value && key !== 'blog_images') {
+//         formDataToSend.append(key, value);
+//       }
+//     });
+
+//     // Append blog_images array
+//     imageFiles.blog_images.forEach((file, index) => {
+//       formDataToSend.append(`blog_images[${index}]`, file);
+//     });
+
+//     console.log('FormData contents:');
+//     for (const [key, value] of formDataToSend.entries()) {
+//       console.log(`${key}:`, value);
+//     }
+
+//     const response = id
+//       ? await UpdateBlog(id, formDataToSend)
+//       : await CreateBlog(formDataToSend);
+
+//     if (!response || typeof response !== 'object') {
+//       throw new Error('Invalid response from server');
+//     }
+
+//     setSubmitStatus({ loading: false, error: null, success: true });
+    
+//     // Reset form...
+//     if (onBlogAction) onBlogAction();
+//     navigate('/');
+
+//   } catch (error) {
+//     console.error('Error submitting blog:', error);
+//     setSubmitStatus({
+//       loading: false,
+//       error: error instanceof Error ? error.message : 'An error occurred while submitting',
+//       success: false,
+//     });
+//   }
+// };
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setSubmitStatus({ loading: true, error: null, success: false });
+
+  try {
+    const formDataToSend = new FormData();
+
+    // ✅ FIXED: Only append TEXT fields (not image URLs)
+    Object.entries(formData).forEach(([key, value]) => {
+      // List of image fields to SKIP
+      const imageFields = [
+        'image_url', 'hero_image', 'blog_image_one', 'blog_image_two', 
+        'blog_image_three', 'author_avatar', 'annotation_image_one', 
+        'annotation_image_two', 'annotation_image_three', 
+        'annotation_image_four', 'annotation_image_five', 'meta_og_image'
+      ];
+      
+      if (
+        !imageFields.includes(key) &&  // ✅ Skip image fields entirely
+        key !== 'blog_images' &&
+        key !== 'id' &&
+        key !== 'created_at' &&
+        key !== 'author_id' &&
+        key !== 'blog_type_id' &&
+        key !== 'meta_facebook_id' &&
+        value !== undefined &&
+        value !== null &&
+        value !== '' &&
+        (typeof value === 'string' ? value.trim() !== '' : true)
+      ) {
+        formDataToSend.append(key, value.toString());
+      }
+    });
+
+    // ✅ Only append FILE objects
+    Object.entries(imageFiles).forEach(([key, value]) => {
+      if (value && key !== 'blog_images') {
+        formDataToSend.append(key, value);
+      }
+    });
+
+    // Append blog_images array
+    // imageFiles.blog_images.forEach((file, index) => {
+    //   formDataToSend.append(`blog_images[${index}]`, file);
+    // });
+
+    console.log('📦 FormData contents:');
+    for (const [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
     }
 
-    try {
-      const formDataToSend = new FormData();
+    const response = id
+      ? await UpdateBlog(id, formDataToSend)
+      : await CreateBlog(formDataToSend);
 
-      // Append text fields (exclude backend-generated fields)
-      Object.entries(formData).forEach(([key, value]) => {
-        if (
-          key !== 'blog_images' &&
-          key !== 'id' &&
-          key !== 'created_at' &&
-          key !== 'author_id' &&
-          key !== 'blog_type_id' &&
-          key !== 'meta_facebook_id' &&
-          value &&
-          value.toString().trim()
-        ) {
-          formDataToSend.append(key, value.toString());
-        }
-      });
-
-      // Append image files
-      Object.entries(imageFiles).forEach(([key, value]) => {
-        if (value && key !== 'blog_images') {
-          formDataToSend.append(key, value);
-        }
-      });
-
-      // Append blog_images array
-      imageFiles.blog_images.forEach((file, index) => {
-        formDataToSend.append(`blog_images[${index}]`, file);
-      });
-
-      // Debugging: Log FormData contents
-      console.log('FormData contents:');
-      for (const [key, value] of formDataToSend.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
-      const response = id
-        ? await UpdateBlog(id, formDataToSend)
-        : await CreateBlog(formDataToSend);
-
-      // Debugging: Log the API response
-      console.log('API Response:', response);
-
-      // Relaxed validation: Check if response exists and seems valid
-      if (!response || typeof response !== 'object') {
-        throw new Error('Invalid response from server: empty or malformed response');
-      }
-
-      setSubmitStatus({ loading: false, error: null, success: true });
-
-      // Reset form
-      setFormData({
-        title: '',
-        description: '',
-        content: '',
-        image_url: '',
-        hero_image: '',
-        blog_image_one: '',
-        blog_image_two: '',
-        blog_image_three: '',
-        author_avatar: '',
-        epigraph: '',
-        first_paragraph: '',
-        second_paragraph: '',
-        third_paragraph: '',
-        fourth_paragraph: '',
-        fifth_paragraph: '',
-        annotation_image_one: '',
-        annotation_image_two: '',
-        annotation_image_three: '',
-        annotation_image_four: '',
-        annotation_image_five: '',
-        point_one_title: '',
-        point_one_description: '',
-        point_two_title: '',
-        point_two_description: '',
-        point_three_title: '',
-        point_three_description: '',
-        point_four_title: '',
-        point_four_description: '',
-        point_five_title: '',
-        point_five_description: '',
-        categories: '',
-        more_blogs: '',
-        meta_description: '',
-        keywords: '',
-        meta_author: '',
-        meta_og_title: '',
-        meta_og_url: '',
-        meta_og_image: '',
-        meta_site_name: '',
-        meta_post_twitter: '',
-        status: 'visible',
-        blog_images: [],
-      });
-      setImageFiles({ blog_images: [] });
-      setImagePreview({});
-
-      if (onBlogAction) onBlogAction();
-      navigate('/');
-    } catch (error) {
-      console.error('Error submitting blog:', error);
-      setSubmitStatus({
-        loading: false,
-        error: error instanceof Error ? error.message : 'An error occurred while submitting',
-        success: false,
-      });
+    if (!response || typeof response !== 'object') {
+      throw new Error('Invalid response from server');
     }
-  };
+
+    setSubmitStatus({ loading: false, error: null, success: true });
+    
+    // Reset form
+    setFormData({ /* your reset code */ });
+    // setImageFiles({ blog_images: [] });
+    setImagePreview({});
+    
+    if (onBlogAction) onBlogAction();
+    navigate('/');
+
+  } catch (error) {
+    console.error('Error submitting blog:', error);
+    setSubmitStatus({
+      loading: false,
+      error: error instanceof Error ? error.message : 'An error occurred',
+      success: false,
+    });
+  }
+};
 
   return (
     <div className="w-full py-5 lg:py-10">
@@ -298,8 +458,8 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
       <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
         {/* Image Uploads with Previews */}
         <div>
-          <label htmlFor="image_url" className="block text-sm font-medium">
-            Image URL (Optional)
+          <label htmlFor="image_url" className="block text-sm font-medium text-">
+            Image URL - Carousel Image (1)
           </label>
           {(formData.image_url || imagePreview.image_url) && (
             <div className="mb-2">
@@ -321,7 +481,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="hero_image" className="block text-sm font-medium">
-            Hero Image (Optional)
+            Hero Image - Carousel image (2)
           </label>
           {(formData.hero_image || imagePreview.hero_image) && (
             <div className="mb-2">
@@ -343,7 +503,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="blog_image_one" className="block text-sm font-medium">
-            Blog Image 1 (Optional)
+            Blog Image 1 Carousel Image (3)
           </label>
           {(formData.blog_image_one || imagePreview.blog_image_one) && (
             <div className="mb-2">
@@ -365,7 +525,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="blog_image_two" className="block text-sm font-medium">
-            Blog Image 2 (Optional)
+           Blog Image 2 Carousel Image (4)
           </label>
           {(formData.blog_image_two || imagePreview.blog_image_two) && (
             <div className="mb-2">
@@ -387,7 +547,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="blog_image_three" className="block text-sm font-medium">
-            Blog Image 3 (Optional)
+            Blog Image 3 Carousel Image (5)
           </label>
           {(formData.blog_image_three || imagePreview.blog_image_three) && (
             <div className="mb-2">
@@ -409,7 +569,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="author_avatar" className="block text-sm font-medium">
-            Author Avatar (Optional)
+            Author - Auth Blog / Company logo
           </label>
           {(formData.author_avatar || imagePreview.author_avatar) && (
             <div className="mb-2">
@@ -431,7 +591,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="annotation_image_one" className="block text-sm font-medium">
-            Annotation Image 1 (Optional)
+            Annotation Image Blog (1) 
           </label>
           {(formData.annotation_image_one || imagePreview.annotation_image_one) && (
             <div className="mb-2">
@@ -453,7 +613,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="annotation_image_two" className="block text-sm font-medium">
-            Annotation Image 2 (Optional)
+            Annotation Image Blog (2)
           </label>
           {(formData.annotation_image_two || imagePreview.annotation_image_two) && (
             <div className="mb-2">
@@ -475,7 +635,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="annotation_image_three" className="block text-sm font-medium">
-            Annotation Image 3 (Optional)
+            Annotation Image  3 (Optional)
           </label>
           {(formData.annotation_image_three || imagePreview.annotation_image_three) && (
             <div className="mb-2">
@@ -615,7 +775,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="description" className="block text-sm font-medium">
-            Description *
+            Description  one only *
           </label>
           <Input
             id="description"
@@ -629,7 +789,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="content" className="block text-sm font-medium">
-            Content *
+            Content one one only *
           </label>
           <textarea
             id="content"
@@ -643,7 +803,7 @@ const Blogs: React.FC<BlogsProps> = ({ onBlogAction }) => {
         </div>
         <div>
           <label htmlFor="epigraph" className="block text-sm font-medium">
-            Epigraph (Optional)
+            Epigraph blog first
           </label>
           <Input
             id="epigraph"

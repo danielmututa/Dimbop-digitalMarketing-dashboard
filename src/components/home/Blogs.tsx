@@ -141,7 +141,7 @@ const Blogs = () => {
               loading='lazy'
               src={card.img}
               alt={card.type}
-              className='h-[300px] md:h-[250px] lg:h-[300px] w-full object-cover'
+              className='h-[400px] md:h-[450px] lg:h-[500px] w-full object-cover'
               onError={(e) => {
                 e.currentTarget.src = '/placeholder-image.jpg';
               }}
