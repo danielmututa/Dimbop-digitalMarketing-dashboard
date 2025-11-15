@@ -343,9 +343,9 @@ const NewProducts = () => {
           return (
             <div
               key={product.id}
-              className=" mb-[40px] md:mb-[50px] lg:mb-[60px] w-full sm:w-[48%] lg:w-[30%] xl:w-[23%] relative h-[400px] group"
+              className=" mb-[40px] md:mb-[50px] lg:mb-[60px] w-full sm:w-[48%] lg:w-[30%] xl:w-[23%] relative h-[500px] lg:h-[450px]  group"
             >
-              <div className="relative w-full h-[300px]   overflow-hidden">
+              <div className="relative w-full h-[400px]  lg:h-[300px]   overflow-hidden">
                 <img
                   loading="lazy"
                   src={getImageUrl(product.image_url) || "/placeholder.svg"}
@@ -359,7 +359,7 @@ const NewProducts = () => {
 
                 {/* Stock indicators */}
                 {inStock ? (
-                  <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                  <div className="absolute top-2 left-2 bg-[#6600EE] text-white text-xs px-2 py-1 rounded">
                     {product.stock_quantity} in stock
                   </div>
                 ) : (
@@ -422,14 +422,14 @@ const NewProducts = () => {
                   <p className="text-sm font-montserrat text-gray-600 text-[16px]">
                     ${Number.parseFloat(product.price).toFixed(2)}
                     {product.discount_percentage && product.discount_percentage > 0 && (
-                      <span className="text-red-500 ml-2">-{product.discount_percentage}%</span>
+                      <span className="text-[#6600EE] ml-2">-{product.discount_percentage}%</span>
                     )}
                   </p>
-                  <p className={`text-xs ${inStock ? "text-green-500" : "text-red-500"}`}>
+                  {/* <p className={`text-xs ${inStock ? "text-green-500" : "text-red-500"}`}>
                     {inStock ? "In Stock" : "Out of Stock"}
-                  </p>
+                  </p> */}
                 </div>
-                <div className="flex items-center gap-1">{renderStars(product.rating ?? 4.5, product.id)}</div>
+                {/* <div className="flex items-center gap-1">{renderStars(product.rating ?? 4.5, product.id)}</div> */}
               </div>
             </div>
           )
@@ -443,7 +443,7 @@ const NewProducts = () => {
         >
           <div className="absolute top-0 left-0 w-0 h-full bg-buttons -skew-x-[45deg] transform transition-all duration-500 ease-out group-hover:w-[calc(100%)] group-hover:-left-[30px]"></div>
           <div className="absolute top-0 right-0 w-0 h-full bg-buttons -skew-x-[45deg] transform transition-all duration-500 ease-out group-hover:w-[calc(100%)] group-hover:-right-[30px]"></div>
-          <span className="text-[12px] lg:text-[16px] relative z-10 font-montserratBold text-buttons transition-all duration-500 ease-out group-hover:text-white group-hover:scale-110">
+          <span className="text-[12px] lg:text-[16px] relative z-10 font-montserratBold text-buttons transition-all duration-500 ease-out group-hover:text-[#6600EE] group-hover:scale-110">
             View More
           </span>
         </button>
